@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SectionHeading } from '@/components/section-heading'
+import { Reveal } from '@/components/animation/reveal'
+import { StaggerGroup, StaggerItem } from '@/components/animation/stagger'
 import type { Service } from '@/lib/services'
 import type { SectionIntroContent } from '@/lib/homepage'
 import { cn } from '@/lib/utils'
@@ -14,7 +16,7 @@ type ServicesPreviewProps = {
 export function ServicesPreview({ services, intro }: ServicesPreviewProps) {
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-24">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+      <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <SectionHeading
           eyebrow={intro.eyebrow}
           title={intro.title}
@@ -26,14 +28,14 @@ export function ServicesPreview({ services, intro }: ServicesPreviewProps) {
             <ArrowRight className="size-4" />
           </Link>
         </Button>
-      </div>
+      </Reveal>
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {services.map((service) => (
-          <div
+          <StaggerItem
             key={service.slug}
             className={cn(
-              'flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md',
+              'flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-md',
               service.featured && 'border-primary/40 ring-1 ring-primary/20',
             )}
           >
@@ -66,9 +68,9 @@ export function ServicesPreview({ services, intro }: ServicesPreviewProps) {
             >
               <Link href={service.ctaHref}>{service.cta}</Link>
             </Button>
-          </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerGroup>
 
       <div className="mt-8 sm:hidden">
         <Button asChild variant="outline" className="w-full rounded-full">

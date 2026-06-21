@@ -4,6 +4,7 @@ import { PageHero } from '@/components/page-hero'
 import { BookingWidget } from '@/components/booking-widget'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { Reveal } from '@/components/animation/reveal'
 import { getBookingContent } from '@/lib/booking'
 import { metadataFromSeo } from '@/lib/content'
 
@@ -33,13 +34,15 @@ export default async function BookingPage() {
 
         <section className="border-b border-border bg-background">
           <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.6fr_1fr] lg:py-24">
-            <BookingWidget
-              sessionTypes={content.sessionTypes}
-              closedWeekdays={content.closedWeekdays}
-              noPaymentText={content.noPaymentText}
-            />
+            <Reveal>
+              <BookingWidget
+                sessionTypes={content.sessionTypes}
+                closedWeekdays={content.closedWeekdays}
+                noPaymentText={content.noPaymentText}
+              />
+            </Reveal>
 
-            <aside className="lg:pt-2">
+            <Reveal as="aside" delay={0.08} className="lg:pt-2">
               <h2 className="font-heading text-xl font-semibold">
                 {content.processTitle}
               </h2>
@@ -62,7 +65,7 @@ export default async function BookingPage() {
                   return (
                     <div
                       key={item.title}
-                      className="flex gap-4 rounded-2xl border border-border bg-card p-5"
+                      className="flex gap-4 rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
                     >
                       <Icon className="size-5 shrink-0 text-primary" />
                       <div>
@@ -75,7 +78,7 @@ export default async function BookingPage() {
                   )
                 })}
               </div>
-            </aside>
+            </Reveal>
           </div>
         </section>
       </main>

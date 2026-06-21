@@ -1,5 +1,7 @@
 import { Star } from 'lucide-react'
 import { SectionHeading } from '@/components/section-heading'
+import { Reveal } from '@/components/animation/reveal'
+import { StaggerGroup, StaggerItem } from '@/components/animation/stagger'
 import type {
   SectionIntroContent,
   TestimonialContent,
@@ -13,18 +15,21 @@ type TestimonialsProps = {
 export function Testimonials({ intro, testimonials }: TestimonialsProps) {
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-24">
-      <SectionHeading
-        eyebrow={intro.eyebrow}
-        title={intro.title}
-        description={intro.description}
-        align="center"
-      />
+      <Reveal>
+        <SectionHeading
+          eyebrow={intro.eyebrow}
+          title={intro.title}
+          description={intro.description}
+          align="center"
+        />
+      </Reveal>
 
-      <div className="mt-12 grid gap-5 md:grid-cols-3">
+      <StaggerGroup className="mt-12 grid gap-5 md:grid-cols-3">
         {testimonials.map((testimonial) => (
-          <figure
+          <StaggerItem
+            as="figure"
             key={`${testimonial.name}-${testimonial.detail}`}
-            className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm"
+            className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-md"
           >
             <div
               className="flex gap-0.5"
@@ -48,9 +53,9 @@ export function Testimonials({ intro, testimonials }: TestimonialsProps) {
                 {testimonial.detail}
               </p>
             </figcaption>
-          </figure>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerGroup>
     </section>
   )
 }

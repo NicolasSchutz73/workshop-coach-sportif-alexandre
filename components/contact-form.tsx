@@ -93,7 +93,7 @@ export function ContactForm({ goals, privacyText }: ContactFormProps) {
 
   return (
     <form
-      className="rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8"
+      className="relative rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8"
       onSubmit={handleSubmit}
     >
       <div
@@ -136,21 +136,26 @@ export function ContactForm({ goals, privacyText }: ContactFormProps) {
       <div className="mt-5 grid gap-2">
         <Label>Votre objectif</Label>
         <div className="flex flex-wrap gap-2">
-          {goals.map((g) => (
-            <button
-              key={g}
-              type="button"
-              onClick={() => setGoal(g)}
-              className={
-                "rounded-full border px-4 py-2 text-sm font-medium transition-colors " +
-                (goal === g
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border text-muted-foreground hover:border-primary/50")
-              }
-            >
-              {g}
-            </button>
-          ))}
+          {goals.map((g) => {
+            const selected = goal === g
+            return (
+              <button
+                key={g}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setGoal(g)}
+                className={
+                  "inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+                  (selected
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground")
+                }
+              >
+                {selected ? <Check className="size-3.5" aria-hidden="true" /> : null}
+                {g}
+              </button>
+            )
+          })}
         </div>
       </div>
 

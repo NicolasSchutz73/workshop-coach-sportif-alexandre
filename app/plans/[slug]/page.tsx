@@ -7,6 +7,8 @@ import { PlanPreviewCarousel } from '@/components/plan-preview-carousel'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { Button } from '@/components/ui/button'
+import { Reveal } from '@/components/animation/reveal'
+import { StaggerGroup, StaggerItem } from '@/components/animation/stagger'
 import { ebookSlugs, isEbookSlug } from '@/lib/ebooks'
 import { getTrainingPlan } from '@/lib/services'
 
@@ -54,9 +56,11 @@ export default async function PlanPage({ params }: PlanPageProps) {
       <main>
         <section className="overflow-hidden border-b border-border/70 bg-background">
           <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-20">
-            <PlanPreviewCarousel plan={plan} />
+            <Reveal variant="scaleReveal">
+              <PlanPreviewCarousel plan={plan} />
+            </Reveal>
 
-            <div>
+            <Reveal delay={0.05}>
               <Button asChild variant="link" size="sm" className="-ml-1">
                 <Link href="/services">
                   <ArrowLeft className="size-4" />
