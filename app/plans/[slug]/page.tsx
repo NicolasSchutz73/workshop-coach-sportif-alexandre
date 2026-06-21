@@ -106,22 +106,22 @@ export default async function PlanPage({ params }: PlanPageProps) {
         </section>
 
         <section className="mx-auto grid w-full max-w-7xl gap-8 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[1fr_0.85fr] lg:gap-16">
-          <div>
+          <Reveal>
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-primary">Dans ce plan</p>
             <h2 className="mt-4 text-balance font-heading text-4xl font-medium tracking-[-0.05em] sm:text-5xl">
               Vous allez recevoir
             </h2>
-            <ul className="mt-8 grid border-t border-border sm:grid-cols-2">
+            <StaggerGroup as="ul" className="mt-8 grid border-t border-border sm:grid-cols-2">
               {plan.receives.map((item) => (
-                <li key={item} className="flex gap-3 border-b border-border py-5 sm:px-5 sm:odd:border-r">
+                <StaggerItem as="li" key={item} className="flex gap-3 border-b border-border py-5 sm:px-5 sm:odd:border-r">
                   <Check className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                   <span className="font-medium leading-snug">{item}</span>
-                </li>
+                </StaggerItem>
               ))}
-            </ul>
-          </div>
+            </StaggerGroup>
+          </Reveal>
 
-          <aside className="rounded-[2rem] bg-primary px-7 py-8 text-primary-foreground shadow-lg sm:px-9 sm:py-10">
+          <Reveal as="aside" delay={0.08} className="rounded-[2rem] bg-primary px-7 py-8 text-primary-foreground shadow-lg sm:px-9 sm:py-10">
             <ShieldCheck className="size-8" aria-hidden="true" />
             <h2 className="mt-6 font-heading text-3xl font-medium tracking-[-0.04em]">Prêt quand vous l’êtes</h2>
             <p className="mt-3 leading-relaxed text-primary-foreground/80">
@@ -135,7 +135,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
                 className="h-12 px-6"
               />
             </div>
-          </aside>
+          </Reveal>
         </section>
       </main>
       <SiteFooter />
