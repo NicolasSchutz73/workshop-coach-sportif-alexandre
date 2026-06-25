@@ -13,8 +13,11 @@ export type AboutContent = {
   seo: SeoContent
   header: PageHeaderContent
   image: { url: string; alt: string }
+  stats: Array<{ value: string; label: string }>
   storyTitle: string
+  storyEyebrow: string
   storyParagraphs: string[]
+  signature: { name: string; role: string }
   certificationsTitle: string
   certifications: string[]
   socialsTitle: string
@@ -41,23 +44,35 @@ export const fallbackAbout: AboutContent = {
     eyebrow: 'À propos',
     title: 'Coureur de cœur, coach de métier',
     description:
-      'Mon objectif : vous aider à progresser durablement, en respectant votre corps et en gardant le plaisir de courir intact.',
+      'Du sentier de montagne à votre plan d’entraînement : un accompagnement humain, exigeant et sur-mesure pour vous faire progresser sans jamais perdre le plaisir de courir.',
   },
   image: {
-    url: '/images/coach-portrait.png',
-    alt: 'Alexandre Schutz, coach running et trail',
+    url: '/images/about-trail-lake.jpg',
+    alt: 'Alexandre Schutz en trail au-dessus d’un lac d’altitude dans les Alpes',
   },
-  storyTitle: 'Mon parcours',
-  storyParagraphs: [
-    'J’ai grandi entre le Lac du Bourget et les massifs des Bauges, où la course est vite devenue une évidence. Des premières foulées sur piste aux longs trails en montagne, j’ai exploré toutes les facettes de ce sport — et toutes ses exigences.',
-    'Après plusieurs années de compétition et un diplôme d’État en poche, j’ai choisi d’accompagner d’autres coureurs. Depuis, j’ai suivi plus de 120 athlètes, du débutant complet au marathonien cherchant à battre son record.',
-    'Mon approche repose sur l’individualisation : aucun plan standardisé, mais un entraînement pensé pour vous, votre vie et vos ambitions.',
+  stats: [
+    { value: '+120', label: 'athlètes accompagnés' },
+    { value: '10 ans', label: 'de compétition' },
+    { value: '6', label: 'ultras terminés' },
+    { value: '95%', label: 'd’objectifs atteints' },
   ],
-  certificationsTitle: 'Certifications',
+  storyTitle: 'De la passion du sentier au métier de coach',
+  storyEyebrow: 'Mon parcours',
+  storyParagraphs: [
+    'J’ai grandi entre le Lac du Bourget et les massifs des Bauges, où la course est vite devenue une évidence. Des premières foulées sur piste aux longues sorties en altitude, j’ai exploré toutes les facettes de ce sport — et appris à en respecter les exigences.',
+    'Dix années de compétition, six ultras au compteur et un diplôme d’État en poche : j’ai vécu de l’intérieur ce que représentent la préparation, le doute, la blessure et la ligne d’arrivée. Cette expérience nourrit aujourd’hui chacun de mes accompagnements.',
+    'Depuis, j’ai suivi plus de 120 coureurs, du débutant qui prépare son premier 10 km au traileur visant un format ultra. Ma conviction n’a jamais changé : aucun plan standardisé, mais un entraînement pensé pour vous, votre quotidien et vos ambitions.',
+  ],
+  signature: {
+    name: 'Alexandre Schutz',
+    role: 'Coach running & trail — Savoie',
+  },
+  certificationsTitle: 'Certifications & formations',
   certifications: [
     'BPJEPS Athlétisme — course hors stade',
-    'Certificat préparation physique',
+    'Certificat de préparation physique',
     'Formation trail & ultra-endurance',
+    'Spécialisation course en montagne',
     'Premiers secours (PSC1)',
   ],
   socialsTitle: 'Me suivre',
@@ -74,22 +89,22 @@ export const fallbackAbout: AboutContent = {
     },
     { platform: 'nolio', label: 'Nolio', href: 'https://nolio.io' },
   ],
-  philosophyTitle: 'Ma philosophie de coaching',
+  philosophyTitle: 'Trois principes qui guident chaque plan',
   principles: [
     {
-      title: 'Progressivité avant tout',
+      title: 'La progressivité avant tout',
       description:
-        'On construit la performance sur des bases solides. Pas de surcharge : chaque semaine prépare la suivante.',
+        'La performance se construit sur des fondations solides. Pas de surcharge inutile : chaque séance a un objectif précis et chaque semaine prépare la suivante.',
     },
     {
-      title: 'À l’écoute du corps',
+      title: 'À l’écoute de votre corps',
       description:
-        'Sensations, sommeil, fatigue : le plan s’ajuste à votre vie réelle, pas l’inverse. La régularité prime sur l’intensité.',
+        'Sensations, sommeil, charge de travail, fatigue : votre plan s’ajuste à votre vie réelle, pas l’inverse. La régularité l’emporte toujours sur l’intensité ponctuelle.',
     },
     {
       title: 'Le plaisir comme moteur',
       description:
-        'Courir doit rester un plaisir. Les paysages de Savoie sont mon terrain de jeu, et je veux qu’ils deviennent le vôtre.',
+        'Courir doit rester une source d’énergie, pas une contrainte. Les sentiers de Savoie sont mon terrain de jeu — mon ambition est qu’ils deviennent le vôtre.',
     },
   ],
   ctaTitle: 'On court ensemble ?',
@@ -184,8 +199,11 @@ export async function getAboutContent(): Promise<AboutContent> {
           data.photo?.alternativeText?.trim() ||
           fallbackAbout.image.alt,
       },
+      stats: fallbackAbout.stats,
       storyTitle: data.titreParcours?.trim() || fallbackAbout.storyTitle,
+      storyEyebrow: fallbackAbout.storyEyebrow,
       storyParagraphs: story.length > 0 ? story : fallbackAbout.storyParagraphs,
+      signature: fallbackAbout.signature,
       certificationsTitle:
         data.titreCertifications?.trim() ||
         fallbackAbout.certificationsTitle,
