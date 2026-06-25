@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 const TIME_ZONE = 'Europe/Paris'
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const E164_PHONE = /^\+[1-9]\d{7,14}$/
+const MONTH_CACHE_TTL = 30_000
 
 type Month = {
   year: number
@@ -19,6 +20,13 @@ type Month = {
 
 type Slot = {
   start: string
+}
+
+type SlotsByDate = Record<string, Slot[]>
+
+type CachedMonth = {
+  expiresAt: number
+  slotsByDate: SlotsByDate
 }
 
 type BookingForm = {
@@ -30,6 +38,7 @@ type BookingForm = {
 
 type CalBookingWidgetProps = {
   noPaymentText: string
+  className?: string
 }
 
 const initialForm: BookingForm = {
@@ -71,6 +80,10 @@ function firstDateOfMonth({ year, month }: Month) {
 
 function lastDateOfMonth({ year, month }: Month) {
   return toDateKey(year, month, new Date(Date.UTC(year, month, 0)).getUTCDate())
+}
+
+function monthCacheKey(month: Month) {
+  return `${firstDateOfMonth(month)}:${lastDateOfMonth(month)}`
 }
 
 function addMonths({ year, month }: Month, offset: number): Month {
@@ -136,12 +149,13 @@ function formError(form: BookingForm) {
   return null
 }
 
-export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
+export function CalBookingWidget({ noPaymentText, className }: CalBookingWidgetProps) {
   const [initialMonth] = useState(() => currentMonth())
   const requestId = useRef(0)
   const confirmationRef = useRef<HTMLElement>(null)
+  const monthCache = useRef(new Map<string, CachedMonth>())
   const [viewMonth, setViewMonth] = useState<Month>(initialMonth)
-  const [slotsByDate, setSlotsByDate] = useState<Record<string, Slot[]>>({})
+  const [slotsByDate, setSlotsByDate] = useState<SlotsByDate>({})
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [form, setForm] = useState<BookingForm>(initialForm)
@@ -154,19 +168,27 @@ export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
   const today = toDateKey(initialMonth.year, initialMonth.month, dateParts(new Date()).day)
   const canGoPrevious = !isSameMonth(viewMonth, initialMonth)
 
-  const loadMonth = useCallback(async (month: Month) => {
+  const loadMonth = useCallback(async (month: Month, forceRefresh = false) => {
     const id = ++requestId.current
+    const cacheKey = monthCacheKey(month)
+    const cachedMonth = monthCache.current.get(cacheKey)
+
+    if (!forceRefresh && cachedMonth && cachedMonth.expiresAt > Date.now()) {
+      setSlotsByDate(cachedMonth.slotsByDate)
+      setErrorMessage(null)
+      setIsLoading(false)
+      return
+    }
 
     try {
       const params = new URLSearchParams({
         start: firstDateOfMonth(month),
         end: lastDateOfMonth(month),
       })
-      const response = await fetch(`/api/cal/slots?${params.toString()}`, {
-        cache: 'no-store',
-      })
+      if (forceRefresh) params.set('refresh', '1')
+      const response = await fetch(`/api/cal/slots?${params.toString()}`)
       const payload = (await response.json().catch(() => null)) as {
-        slotsByDate?: Record<string, Slot[]>
+        slotsByDate?: SlotsByDate
         error?: string
       } | null
 
@@ -175,7 +197,13 @@ export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
       }
       if (id !== requestId.current) return
 
-      setSlotsByDate(payload?.slotsByDate ?? {})
+      const nextSlotsByDate = payload?.slotsByDate ?? {}
+      monthCache.current.set(cacheKey, {
+        slotsByDate: nextSlotsByDate,
+        expiresAt: Date.now() + MONTH_CACHE_TTL,
+      })
+      setSlotsByDate(nextSlotsByDate)
+      setErrorMessage(null)
     } catch (error) {
       if (id !== requestId.current) return
       setSlotsByDate({})
@@ -269,13 +297,35 @@ export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
         setSelectedSlot(null)
         setErrorMessage('Ce créneau vient d’être pris. Choisissez-en un autre.')
         setIsLoading(true)
-        void loadMonth(viewMonth)
+        void loadMonth(viewMonth, true)
         return
       }
       if (!response.ok || !payload?.success) {
         throw new Error(payload?.error || 'La réservation est temporairement indisponible.')
       }
 
+      setSlotsByDate((current) => {
+        const remainingSlots = (current[selectedDate] ?? []).filter(
+          (slot) => slot.start !== selectedSlot,
+        )
+
+        if (remainingSlots.length === 0) {
+          const remainingDates = { ...current }
+          delete remainingDates[selectedDate]
+          monthCache.current.set(monthCacheKey(viewMonth), {
+            slotsByDate: remainingDates,
+            expiresAt: Date.now() + MONTH_CACHE_TTL,
+          })
+          return remainingDates
+        }
+
+        const remainingDates = { ...current, [selectedDate]: remainingSlots }
+        monthCache.current.set(monthCacheKey(viewMonth), {
+          slotsByDate: remainingDates,
+          expiresAt: Date.now() + MONTH_CACHE_TTL,
+        })
+        return remainingDates
+      })
       setConfirmation(
         `Votre rendez-vous du ${fullDateLabel(selectedDate)} à ${timeLabel(selectedSlot)} est confirmé.`,
       )
@@ -291,46 +341,55 @@ export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
     }
   }
 
-  if (confirmation) {
-    return (
-      <section
-        ref={confirmationRef}
-        tabIndex={-1}
-        className="scroll-mt-24 rounded-3xl border border-border bg-card p-8 text-center shadow-sm outline-none"
-        aria-live="polite"
-      >
-        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground">
-          <Check className="size-7" aria-hidden="true" />
-        </div>
-        <h2 className="mt-5 font-heading text-2xl font-bold">Rendez-vous réservé</h2>
-        <p className="mt-3 text-pretty leading-relaxed text-muted-foreground">{confirmation}</p>
-        <Button
-          className="mt-7 h-11 rounded-full px-5"
-          onClick={() => {
-            setConfirmation(null)
-            setSelectedDate(null)
-            setSelectedSlot(null)
-          }}
-        >
-          Réserver un autre créneau
-        </Button>
-      </section>
-    )
-  }
-
   return (
-    <section className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm" aria-labelledby="cal-booking-title">
-      <div className="border-b border-border/60 bg-accent/35 px-6 py-5 sm:px-7">
+    <section
+      ref={confirmation ? confirmationRef : undefined}
+      tabIndex={confirmation ? -1 : undefined}
+      className={cn(
+        'scroll-mt-24 flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm outline-none',
+        className,
+      )}
+      aria-labelledby="cal-booking-title"
+      aria-live={confirmation ? 'polite' : undefined}
+    >
+      <div className="shrink-0 border-b border-border/60 bg-primary px-6 py-5 sm:px-7">
         <div className="flex items-center gap-3">
-          <CalendarDays className="size-5 text-primary" aria-hidden="true" />
+          <CalendarDays className="size-5 text-primary-foreground" aria-hidden="true" />
           <div>
-            <h2 id="cal-booking-title" className="font-heading text-xl font-bold">Choisissez votre créneau</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Tous les horaires sont affichés à l’heure de Paris.</p>
+            <h2 id="cal-booking-title" className="font-heading text-xl font-bold text-primary-foreground">
+              {confirmation ? 'Votre rendez-vous est confirmé' : 'Choisissez votre créneau'}
+            </h2>
+            <p className="mt-1 text-sm text-primary-foreground/80">
+              {confirmation
+                ? 'Un e-mail de confirmation vous sera envoyé.'
+                : 'Tous les horaires sont affichés à l’heure de Paris.'}
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
+      {confirmation ? (
+        <div className="flex min-h-[360px] flex-1 items-center justify-center p-6 sm:p-10">
+          <div className="max-w-md text-center">
+            <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <Check className="size-7" aria-hidden="true" />
+            </div>
+            <h3 className="mt-5 font-heading text-2xl font-bold">Rendez-vous réservé</h3>
+            <p className="mt-3 text-pretty leading-relaxed text-muted-foreground">{confirmation}</p>
+            <Button
+              className="mt-7 h-11 rounded-full px-5"
+              onClick={() => {
+                setConfirmation(null)
+                setSelectedDate(null)
+                setSelectedSlot(null)
+              }}
+            >
+              Réserver un autre créneau
+            </Button>
+          </div>
+        </div>
+      ) : (
+      <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.85fr)]">
         <div className="border-b border-border/60 p-5 sm:p-7 lg:border-r lg:border-b-0">
           <div className="flex items-center justify-between gap-3">
             <h3 className="font-heading text-lg font-semibold capitalize">{monthLabel(viewMonth)}</h3>
@@ -400,31 +459,38 @@ export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
           {selectedDate && !isLoading ? (
             selectedSlots.length > 0 ? (
               <div className="mt-5" role="group" aria-label={`Créneaux du ${fullDateLabel(selectedDate)}`}>
-                <div className="grid grid-cols-2 gap-2">
-                  {selectedSlots.map((slot) => {
-                    const selected = slot.start === selectedSlot
-                    return (
-                      <button
-                        key={slot.start}
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() => {
-                          setSelectedSlot(slot.start)
-                          setErrorMessage(null)
-                        }}
-                        className={cn(
-                          'rounded-xl border py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
-                          selected ? 'border-primary bg-primary text-primary-foreground' : 'border-border hover:border-primary/50 hover:bg-accent/40',
-                        )}
-                      >
-                        {timeLabel(slot.start)}
-                      </button>
-                    )
-                  })}
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground" aria-live="polite">
-                  {selectedSlot ? `Créneau sélectionné : ${timeLabel(selectedSlot)}.` : 'Sélectionnez un horaire.'}
-                </p>
+                {selectedSlot ? (
+                  <div className="rounded-2xl border border-primary/20 bg-accent/45 p-4">
+                    <p className="text-xs font-semibold tracking-[0.14em] text-accent-foreground uppercase">Créneau sélectionné</p>
+                    <p className="mt-1 font-heading text-xl font-bold text-accent-foreground">{timeLabel(selectedSlot)}</p>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSlot(null)}
+                      className="mt-3 text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                    >
+                      Changer d’horaire
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-2" aria-label="Liste des horaires disponibles">
+                      {selectedSlots.map((slot) => (
+                        <button
+                          key={slot.start}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSlot(slot.start)
+                            setErrorMessage(null)
+                          }}
+                          className="rounded-xl border border-border py-3 text-sm font-semibold transition-colors hover:border-primary/50 hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                        >
+                          {timeLabel(slot.start)}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="mt-4 text-sm text-muted-foreground">Sélectionnez un horaire.</p>
+                  </>
+                )}
               </div>
             ) : <p className="mt-5 text-sm leading-relaxed text-muted-foreground">Aucun créneau n’est disponible pour cette date.</p>
           ) : !isLoading ? <p className="mt-5 text-sm leading-relaxed text-muted-foreground">Choisissez une date disponible dans le calendrier.</p> : null}
@@ -457,6 +523,7 @@ export function CalBookingWidget({ noPaymentText }: CalBookingWidgetProps) {
           <p className="mt-4 text-center text-xs text-muted-foreground">{noPaymentText}</p>
         </div>
       </div>
+      )}
     </section>
   )
 }

@@ -25,6 +25,11 @@ export function EbookCheckoutButton({
   async function startCheckout() {
     if (isRedirecting) return
 
+    // Open synchronously from the user gesture so browsers do not block the
+    // checkout after the asynchronous API request completes.
+    const checkoutWindow = window.open('', '_blank')
+    if (checkoutWindow) checkoutWindow.opener = null
+
     setIsRedirecting(true)
     setErrorMessage(null)
 
@@ -47,8 +52,15 @@ export function EbookCheckoutButton({
         )
       }
 
-      window.location.assign(payload.url)
+      if (!checkoutWindow) {
+        throw new Error(
+          'Votre navigateur a bloqué le nouvel onglet de paiement. Autorisez les pop-ups puis réessayez.',
+        )
+      }
+
+      checkoutWindow.location.replace(payload.url)
     } catch (error) {
+      checkoutWindow?.close()
       setErrorMessage(
         error instanceof Error && error.message
           ? error.message

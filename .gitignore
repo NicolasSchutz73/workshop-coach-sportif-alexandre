@@ -28,9 +28,6 @@
 /.playwright-mcp/
 /graphify-out/
 
-# documentation is kept outside the application repository
-*.md
-
 # debug
 npm-debug.log*
 yarn-debug.log*

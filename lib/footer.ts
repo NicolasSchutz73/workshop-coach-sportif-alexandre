@@ -1,4 +1,5 @@
 import { strapiFetch } from '@/lib/strapi'
+import { normalizeInternalHref } from '@/lib/routes'
 
 export type FooterContent = {
   brandName: string
@@ -13,6 +14,12 @@ export type FooterContent = {
     links: Array<{ href: string; label: string }>
   }>
 }
+
+export const legalLinks = [
+  { href: '/mentions-legales', label: 'Mentions légales' },
+  { href: '/politique-confidentialite', label: 'Confidentialité' },
+  { href: '/cgv', label: 'CGV' },
+]
 
 export const fallbackFooter: FooterContent = {
   brandName: 'Alexandre Schutz',
@@ -36,9 +43,8 @@ export const fallbackFooter: FooterContent = {
     {
       title: 'Prestations',
       links: [
-        { href: '/services', label: 'Coaching 1-to-1' },
         { href: '/services', label: 'Coaching mensuel' },
-        { href: '/services', label: 'Coaching en ligne' },
+        { href: '/services', label: 'Séance 1-to-1' },
         { href: '/services', label: 'E-books & plans' },
       ],
     },
@@ -100,7 +106,7 @@ export async function getFooter(): Promise<FooterContent> {
             column.liens
               ?.map((link) => ({
                 label: link.libelle?.trim() ?? '',
-                href: link.lien?.trim() ?? '',
+                href: normalizeInternalHref(link.lien?.trim() ?? ''),
               }))
               .filter((link) => link.label && link.href) ?? [],
         }))

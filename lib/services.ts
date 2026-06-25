@@ -2,7 +2,6 @@ import {
   User,
   CalendarDays,
   BookOpen,
-  Laptop,
   type LucideIcon,
 } from 'lucide-react'
 import { getStrapiMediaUrl, strapiFetch } from '@/lib/strapi'
@@ -11,6 +10,9 @@ import {
   splitKeywords,
 } from '@/lib/content'
 import { isEbookSlug, type EbookSlug } from '@/lib/ebooks'
+import { normalizeInternalHref, reservationPath } from '@/lib/routes'
+
+const nolioCoachProfileUrl = 'https://www.nolio.io/coach/alexandre.schutz.63155/'
 
 export type Service = {
   slug: string
@@ -31,81 +33,69 @@ export type Service = {
   }
 }
 
+const visibleServiceSlugs = [
+  'coaching-1to1',
+  'coaching-mensuel',
+  'ebooks-plans',
+] as const
+
 export const fallbackServices: Service[] = [
-  {
-    slug: 'coaching-1to1',
-    icon: User,
-    name: 'Coaching 1-to-1',
-    tagline: 'Séances individuelles',
-    price: '55€',
-    priceNote: '/ séance',
-    description:
-      'Des séances en présentiel autour de Chambéry et du Lac du Bourget, centrées sur votre technique et vos sensations.',
-    features: [
-      'Séance individuelle d’1h',
-      'Analyse de la foulée',
-      'Travail technique sur le terrain',
-      'Conseils nutrition & récupération',
-    ],
-    cta: 'Réserver une séance',
-    ctaHref: '/booking',
-  },
   {
     slug: 'coaching-mensuel',
     icon: CalendarDays,
     name: 'Coaching mensuel',
-    tagline: 'Le plus populaire',
-    price: '120€',
-    priceNote: '/ mois',
+    tagline: 'Suivi complet',
+    price: 'Sur devis',
+    priceNote: 'après échange',
     description:
-      'L’accompagnement complet pour progresser durablement, avec un plan évolutif et un suivi hebdomadaire.',
+      'L’accompagnement le plus complet pour progresser durablement, avec un plan adapté, des séances terrain et un suivi régulier.',
     features: [
       'Plan d’entraînement personnalisé',
-      'Ajustements hebdomadaires',
-      'Suivi illimité par messagerie',
-      'Bilan mensuel de progression',
-      'Accès à l’app Nolio',
+      'Séances en présentiel selon l’objectif',
+      'Ajustements chaque semaine',
+      'Suivi via Nolio',
+      'Accès aux e-books utiles à la préparation',
     ],
     featured: true,
-    featuredLabel: 'Le plus populaire',
-    cta: 'Commencer maintenant',
-    ctaHref: '/booking',
+    featuredLabel: 'Accompagnement complet',
+    cta: 'Démarrer avec Nolio',
+    ctaHref: nolioCoachProfileUrl,
   },
   {
-    slug: 'coaching-en-ligne',
-    icon: Laptop,
-    name: 'Coaching en ligne',
-    tagline: 'Où que vous soyez',
-    price: '89€',
-    priceNote: '/ mois',
+    slug: 'coaching-1to1',
+    icon: User,
+    name: 'Séance 1-to-1',
+    tagline: 'Séance ponctuelle',
+    price: 'À définir',
+    priceNote: 'selon format',
     description:
-      'Tout le suivi à distance, idéal pour les coureurs autonomes qui veulent une structure et un regard expert.',
+      'Une séance individuelle pour travailler un point précis : technique, reprise, préparation d’une course ou remise en route.',
     features: [
-      'Plan d’entraînement mensuel',
-      'Suivi via Nolio',
-      'Point visio bimensuel',
-      'Réponses sous 24h',
+      'Séance terrain autour de Chambéry',
+      'Analyse de la foulée et des appuis',
+      'Conseils personnalisés après la séance',
+      'Idéal avant de choisir un suivi long',
     ],
-    cta: 'Démarrer en ligne',
-    ctaHref: '/booking',
+    cta: 'Réserver une séance',
+    ctaHref: reservationPath,
   },
   {
     slug: 'ebooks-plans',
     icon: BookOpen,
     name: 'E-books & plans',
-    tagline: 'En téléchargement',
-    price: '19€',
+    tagline: 'Autonomie',
+    price: 'Dès 19€',
     priceNote: '/ plan',
     description:
-      'Des plans d’entraînement PDF prêts à l’emploi pour 10 km, semi, marathon et trail.',
+      'Des plans PDF prêts à suivre pour progresser en autonomie sur 10 km, semi, marathon ou trail découverte.',
     features: [
-      'Plans 10 km, semi & marathon',
-      'Plan trail découverte',
-      'Conseils nutrition inclus',
-      'Téléchargement immédiat',
+      'Plans structurés semaine par semaine',
+      'Objectifs 10 km, semi, marathon et trail',
+      'Conseils d’allure et de récupération',
+      'Paiement sécurisé et envoi par e-mail',
     ],
-    cta: 'Voir les plans',
-    ctaHref: '/services',
+    cta: 'Voir les e-books',
+    ctaHref: '#ebooks',
   },
 ]
 
@@ -164,7 +154,7 @@ export const fallbackServicesPageContent: ServicesPageContent = {
   seo: {
     title: 'Prestations & tarifs',
     description:
-      'Coaching running et trail à Chambéry : séances 1-to-1, coaching mensuel, suivi en ligne, e-books et plans d’entraînement. Tarifs clairs, accompagnement personnalisé.',
+      'Coaching running et trail à Chambéry : coaching mensuel, séance individuelle, e-books et plans d’entraînement. Accompagnement personnalisé et réservation en ligne.',
     keywords: [
       'coaching running Chambéry',
       'tarif coach running',
@@ -174,15 +164,15 @@ export const fallbackServicesPageContent: ServicesPageContent = {
   },
   header: {
     eyebrow: 'Prestations',
-    title: 'Choisissez votre accompagnement',
+    title: 'Trois façons de progresser',
     description:
-      'Des formules pensées pour chaque coureur, du suivi ponctuel au coaching complet. Premier échange toujours gratuit.',
+      'Un suivi complet, une séance ponctuelle ou un plan à suivre en autonomie. Les formats précis seront ajustés avec Alexandre avant la mise en ligne.',
   },
   plansSection: {
     eyebrow: 'E-books & plans',
     title: 'Des plans prêts à courir',
     description:
-      'Idéal pour les coureurs autonomes. Téléchargez votre plan PDF et suivez une préparation structurée, semaine après semaine.',
+      'Idéal pour les coureurs autonomes. Les e-books sont les seuls produits payables directement sur le site à ce stade.',
     plans: [
       {
         slug: 'plan-10-km',
@@ -302,8 +292,8 @@ export const fallbackServicesPageContent: ServicesPageContent = {
       },
     ],
     image: {
-      url: '/images/marathon.png',
-      alt: 'Chaussures de trail en pleine foulée sur un sentier de montagne',
+      url: '/images/plans-ready-to-run.jpg',
+      alt: 'Coureur en mouvement sur une promenade urbaine, image floue dynamique',
     },
   },
   finalCta: {
@@ -312,7 +302,7 @@ export const fallbackServicesPageContent: ServicesPageContent = {
       'Réservez un premier échange gratuit. On choisit ensemble la meilleure approche pour vos objectifs.',
     button: {
       label: 'Réserver un échange gratuit',
-      href: '/booking',
+      href: reservationPath,
     },
   },
 }
@@ -419,8 +409,14 @@ type StrapiSingleResponse<T> = {
 const iconBySlug: Record<string, LucideIcon> = {
   'coaching-1to1': User,
   'coaching-mensuel': CalendarDays,
-  'coaching-en-ligne': Laptop,
   'ebooks-plans': BookOpen,
+}
+
+function toVisibleServices(services: Service[]) {
+  return visibleServiceSlugs
+    .map((slug) => services.find((service) => service.slug === slug) ??
+      fallbackServices.find((service) => service.slug === slug))
+    .filter((service): service is Service => Boolean(service))
 }
 
 function normalizeEntity<T>(entity: StrapiEntity<T>): T {
@@ -475,7 +471,7 @@ function normalizeButton(
 ) {
   return {
     label: button?.label ?? fallback.label,
-    href: button?.href ?? fallback.href,
+    href: normalizeInternalHref(button?.href ?? fallback.href),
   }
 }
 
@@ -501,7 +497,12 @@ function toService(entry: StrapiEntity<StrapiService>, index: number): Service {
     featuredLabel:
       data.featuredLabel?.trim() || fallback?.featuredLabel,
     cta: data.button?.label ?? fallback?.cta ?? 'Réserver',
-    ctaHref: data.button?.href ?? fallback?.ctaHref ?? '/booking',
+    ctaHref:
+      slug === 'coaching-mensuel'
+        ? nolioCoachProfileUrl
+        : normalizeInternalHref(
+            data.button?.href ?? fallback?.ctaHref ?? reservationPath,
+          ),
     image: normalizeImage(data.image),
   }
 }
@@ -520,16 +521,18 @@ export async function getServices(): Promise<Service[]> {
       },
     )
 
-    if (!response.data) return fallbackServices
+    if (!response.data) return toVisibleServices(fallbackServices)
 
     const data = normalizeEntity(response.data)
-    if (!data.services?.length) return fallbackServices
+    if (!data.services?.length) return toVisibleServices(fallbackServices)
 
-    return data.services.map((service, index) =>
+    const services = data.services.map((service, index) =>
       toService(service as StrapiEntity<StrapiService>, index),
     )
+
+    return toVisibleServices(services)
   } catch {
-    return fallbackServices
+    return toVisibleServices(fallbackServices)
   }
 }
 

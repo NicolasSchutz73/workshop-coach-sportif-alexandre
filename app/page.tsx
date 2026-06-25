@@ -1,5 +1,4 @@
 import { Hero } from '@/components/home/hero'
-import { Benefits } from '@/components/home/benefits'
 import { ServicesPreview } from '@/components/home/services-preview'
 import { AboutPreview } from '@/components/home/about-preview'
 import { Testimonials } from '@/components/home/testimonials'
@@ -28,7 +27,6 @@ export default async function Page() {
       <SiteHeader />
       <main>
         <Hero content={homepage.hero} />
-        <Benefits benefits={homepage.benefits} />
         <ServicesPreview services={services} intro={homepage.servicesIntro} />
         <AboutPreview content={homepage.aboutPreview} />
         <Testimonials

@@ -6,6 +6,7 @@ import {
   splitKeywords,
   textFromBlocks,
 } from '@/lib/content'
+import { normalizeInternalHref, reservationPath } from '@/lib/routes'
 import { getStrapiMediaUrl, strapiFetch } from '@/lib/strapi'
 
 export type AboutContent = {
@@ -92,7 +93,7 @@ export const fallbackAbout: AboutContent = {
     },
   ],
   ctaTitle: 'On court ensemble ?',
-  primaryButton: { label: 'Réserver un coaching', href: '/booking' },
+  primaryButton: { label: 'Réserver un coaching', href: reservationPath },
   secondaryButton: { label: 'Voir les prestations', href: '/services' },
 }
 
@@ -204,17 +205,19 @@ export async function getAboutContent(): Promise<AboutContent> {
         label:
           data.boutonPrincipal?.label?.trim() ||
           fallbackAbout.primaryButton.label,
-        href:
+        href: normalizeInternalHref(
           data.boutonPrincipal?.href?.trim() ||
-          fallbackAbout.primaryButton.href,
+            fallbackAbout.primaryButton.href,
+        ),
       },
       secondaryButton: {
         label:
           data.boutonSecondaire?.label?.trim() ||
           fallbackAbout.secondaryButton.label,
-        href:
+        href: normalizeInternalHref(
           data.boutonSecondaire?.href?.trim() ||
-          fallbackAbout.secondaryButton.href,
+            fallbackAbout.secondaryButton.href,
+        ),
       },
     }
   } catch {

@@ -1,18 +1,10 @@
 import type { Metadata } from 'next'
-import { Clock, MapPin, ShieldCheck } from 'lucide-react'
 import { CalBookingWidget } from '@/components/cal-booking-widget'
-import { PageHero } from '@/components/page-hero'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { Reveal } from '@/components/animation/reveal'
 import { getBookingContent } from '@/lib/booking'
 import { metadataFromSeo } from '@/lib/content'
-
-const reassuranceIconByKey = {
-  horloge: Clock,
-  localisation: MapPin,
-  securite: ShieldCheck,
-}
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getBookingContent()
@@ -21,59 +13,44 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ReservationPage() {
   const content = await getBookingContent()
+  const steps = content.steps
 
   return (
     <>
       <SiteHeader />
       <main>
-        <PageHero
-          eyebrow={content.header.eyebrow}
-          title={content.header.title}
-          description={content.header.description}
-        />
+        <section className="bg-background py-8 sm:py-12 lg:py-16">
+          <div className="mx-auto grid w-full max-w-6xl gap-6 px-5 sm:px-6 lg:min-h-[640px] lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)] lg:gap-8">
+            <Reveal
+              as="aside"
+              className="rounded-[2.5rem] bg-primary p-7 text-primary-foreground sm:p-9 lg:min-h-[640px] lg:px-10 lg:pt-8 lg:pb-10"
+            >
+              <h1 className="max-w-xl text-balance font-heading text-3xl font-extrabold tracking-tight lg:-mt-2 sm:text-4xl">
+                {content.header.title}
+              </h1>
+              <p className="mt-4 max-w-lg text-pretty text-sm leading-relaxed text-primary-foreground/80 sm:text-base">
+                {content.header.description}
+              </p>
 
-        <section className="border-b border-border bg-background">
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.6fr_1fr] lg:py-24">
-            <Reveal>
-              <CalBookingWidget noPaymentText={content.noPaymentText} />
-            </Reveal>
-
-            <Reveal as="aside" delay={0.08} className="lg:pt-2">
-              <h2 className="font-heading text-xl font-semibold">
-                {content.processTitle}
-              </h2>
-              <ol className="mt-6 space-y-6">
-                {content.steps.map((step, index) => (
+              <ol className="mt-8 space-y-4">
+                {steps.map((step, index) => (
                   <li key={step} className="flex gap-4">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-foreground/15 text-sm font-semibold text-primary-foreground">
                       {index + 1}
                     </span>
-                    <p className="pt-1 text-pretty leading-relaxed text-muted-foreground">
+                    <p className="pt-1 text-pretty text-sm leading-relaxed text-primary-foreground/85">
                       {step}
                     </p>
                   </li>
                 ))}
               </ol>
+            </Reveal>
 
-              <div className="mt-10 grid gap-4">
-                {content.reassurances.map((item) => {
-                  const Icon = reassuranceIconByKey[item.icon]
-                  return (
-                    <div
-                      key={item.title}
-                      className="flex gap-4 rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
-                    >
-                      <Icon className="size-5 shrink-0 text-primary" />
-                      <div>
-                        <h3 className="text-sm font-semibold">{item.title}</h3>
-                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                          {item.text}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+            <Reveal delay={0.08} className="lg:flex">
+              <CalBookingWidget
+                className="w-full"
+                noPaymentText={content.noPaymentText}
+              />
             </Reveal>
           </div>
         </section>

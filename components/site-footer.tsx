@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Camera, MessageCircle, Activity } from 'lucide-react'
-import { getFooter } from '@/lib/footer'
+import { getFooter, legalLinks } from '@/lib/footer'
 
 export async function SiteFooter() {
   const content = await getFooter()
@@ -62,9 +62,18 @@ export async function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {content.copyrightText}
           </p>
-          <p className="font-mono text-xs uppercase tracking-wider">
-            {content.locationText}
-          </p>
+          <nav aria-label="Liens légaux" className="flex flex-wrap gap-x-4 gap-y-2">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors hover:text-background"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <p className="font-mono text-xs uppercase tracking-wider">{content.locationText}</p>
         </div>
       </div>
     </footer>

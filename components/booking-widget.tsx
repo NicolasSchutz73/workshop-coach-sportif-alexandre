@@ -270,7 +270,7 @@ export function BookingWidget({
 
       if (payload.emailsSent === false) {
         setEmailWarning(
-          "La réservation est enregistrée, mais l'email n'a pas pu être envoyé. Vérifiez la configuration Resend.",
+          "La réservation est enregistrée, mais l'email n'a pas pu être envoyé. Vérifiez la configuration SMTP.",
         )
       }
 

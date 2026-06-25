@@ -101,7 +101,7 @@ export default async function PlanPage({ params }: PlanPageProps) {
                   PDF envoyé par e-mail après paiement
                 </p>
               </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
