@@ -1,21 +1,37 @@
 # Alexandre Schutz — site de coaching running et trail
 
-Frontend Next.js 16 du site vitrine d’Alexandre Schutz. Le site utilise Strapi
-pour le contenu éditorial, Lemon Squeezy pour les e-books et Cal.com pour les
-réservations.
+Monorepo du site vitrine d’Alexandre Schutz :
+
+- frontend Next.js 16 à la racine du dépôt ;
+- backend Strapi dans `backend/`.
+
+Le site utilise Strapi pour le contenu éditorial, Lemon Squeezy pour les
+e-books et Cal.com pour les réservations.
 
 ## Démarrage
+
+Frontend :
 
 ```bash
 npm install
 npm run dev
 ```
 
-Le site est disponible sur `http://localhost:3000`. Vérifications disponibles :
+Backend Strapi :
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Le site est disponible sur `http://localhost:3000` en développement Next.js.
+Strapi est disponible sur `http://localhost:1337`. Vérifications disponibles :
 
 ```bash
 npm run lint
 npm run build
+cd backend && npm run build
 ```
 
 ## Architecture fonctionnelle

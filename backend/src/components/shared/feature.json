@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_shared_features",
+  "info": {
+    "displayName": "Point clé",
+    "icon": "check"
+  },
+  "options": {},
+  "config": {
+    "metadatas": {
+      "name": {
+        "edit": {
+          "label": "Nom"
+        },
+        "list": {
+          "label": "Nom"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      }
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

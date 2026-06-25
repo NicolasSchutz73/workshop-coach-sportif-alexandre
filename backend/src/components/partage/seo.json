@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_partage_seos",
+  "info": {
+    "displayName": "Référencement",
+    "icon": "search"
+  },
+  "options": {},
+  "attributes": {
+    "titre": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "motsCles": {
+      "type": "text"
+    }
+  }
+}

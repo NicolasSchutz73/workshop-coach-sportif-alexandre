@@ -1,0 +1,56 @@
+{
+  "collectionName": "components_homepage_benefits",
+  "info": {
+    "displayName": "Bénéfice",
+    "icon": "star"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "icon": {
+      "type": "enumeration",
+      "enum": [
+        "target",
+        "line-chart",
+        "gauge",
+        "laptop"
+      ],
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "title": {
+        "edit": {
+          "label": "Titre"
+        },
+        "list": {
+          "label": "Titre"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      },
+      "icon": {
+        "edit": {
+          "label": "Icône"
+        },
+        "list": {
+          "label": "Icône"
+        }
+      }
+    }
+  }
+}

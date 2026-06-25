@@ -1,0 +1,67 @@
+{
+  "kind": "singleType",
+  "collectionName": "pages_contact",
+  "info": {
+    "singularName": "page-contact",
+    "pluralName": "pages-contact",
+    "displayName": "Page Contact",
+    "description": "Contenu administrable de la page Contact"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nomInterne": {
+      "type": "string",
+      "required": true,
+      "default": "Page Contact"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo",
+      "required": true
+    },
+    "entete": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.entete-page",
+      "required": true
+    },
+    "titreCoordonnees": {
+      "type": "string",
+      "required": true
+    },
+    "descriptionCoordonnees": {
+      "type": "text",
+      "required": true
+    },
+    "coordonnees": {
+      "type": "component",
+      "repeatable": true,
+      "component": "page-contact.coordonnee",
+      "required": true
+    },
+    "titreDisponibilites": {
+      "type": "string",
+      "required": true
+    },
+    "horaires": {
+      "type": "component",
+      "repeatable": true,
+      "component": "page-contact.horaire",
+      "required": true
+    },
+    "objectifsFormulaire": {
+      "type": "component",
+      "repeatable": true,
+      "component": "partage.element-liste",
+      "required": true
+    },
+    "confidentialiteFormulaire": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

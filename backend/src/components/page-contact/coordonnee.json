@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_page_contact_coordonnees",
+  "info": {
+    "displayName": "Coordonnée",
+    "icon": "pinMap"
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "zone",
+        "email",
+        "telephone",
+        "instagram"
+      ],
+      "required": true
+    },
+    "libelle": {
+      "type": "string",
+      "required": true
+    },
+    "valeur": {
+      "type": "string",
+      "required": true
+    },
+    "lien": {
+      "type": "string"
+    }
+  }
+}

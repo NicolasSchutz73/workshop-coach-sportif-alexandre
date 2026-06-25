@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_certifications",
+  "info": {
+    "displayName": "Certification",
+    "icon": "badge"
+  },
+  "options": {},
+  "config": {
+    "metadatas": {
+      "label": {
+        "edit": {
+          "label": "Intitulé"
+        },
+        "list": {
+          "label": "Intitulé"
+        }
+      }
+    }
+  },
+  "attributes": {
+    "label": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

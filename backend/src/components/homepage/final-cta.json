@@ -1,0 +1,74 @@
+{
+  "collectionName": "components_homepage_final_ctas",
+  "info": {
+    "displayName": "5. Appel à l'action final",
+    "icon": "rocket"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "primaryButton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    },
+    "secondaryButton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imageAlt": {
+      "type": "string"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "title": {
+        "edit": {
+          "label": "Question principale"
+        },
+        "list": {
+          "label": "Question principale"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Texte"
+        },
+        "list": {
+          "label": "Texte"
+        }
+      },
+      "primaryButton": {
+        "edit": {
+          "label": "Bouton principal"
+        },
+        "list": {
+          "label": "Bouton principal"
+        }
+      },
+      "secondaryButton": {
+        "edit": {
+          "label": "Bouton secondaire"
+        },
+        "list": {
+          "label": "Bouton secondaire"
+        }
+      }
+    }
+  }
+}

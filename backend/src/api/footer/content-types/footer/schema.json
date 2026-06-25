@@ -1,0 +1,109 @@
+{
+  "kind": "singleType",
+  "collectionName": "footers",
+  "info": {
+    "singularName": "footer",
+    "pluralName": "footers",
+    "displayName": "Pied de page",
+    "description": "Textes et liens sociaux affichés dans le pied de page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "config": {
+    "metadatas": {
+      "brandName": {
+        "edit": {
+          "label": "Nom affiché"
+        },
+        "list": {
+          "label": "Nom affiché"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      },
+      "instagramUrl": {
+        "edit": {
+          "label": "Lien Instagram"
+        },
+        "list": {
+          "label": "Instagram"
+        }
+      },
+      "whatsappUrl": {
+        "edit": {
+          "label": "Lien WhatsApp"
+        },
+        "list": {
+          "label": "WhatsApp"
+        }
+      },
+      "nolioUrl": {
+        "edit": {
+          "label": "Lien Nolio"
+        },
+        "list": {
+          "label": "Nolio"
+        }
+      },
+      "copyrightText": {
+        "edit": {
+          "label": "Texte de copyright"
+        },
+        "list": {
+          "label": "Copyright"
+        }
+      },
+      "locationText": {
+        "edit": {
+          "label": "Localisation"
+        },
+        "list": {
+          "label": "Localisation"
+        }
+      }
+    }
+  },
+  "attributes": {
+    "brandName": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "instagramUrl": {
+      "type": "string",
+      "required": true
+    },
+    "whatsappUrl": {
+      "type": "string",
+      "required": true
+    },
+    "nolioUrl": {
+      "type": "string",
+      "required": true
+    },
+    "copyrightText": {
+      "type": "string",
+      "required": true
+    },
+    "locationText": {
+      "type": "string",
+      "required": true
+    },
+    "colonnes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "partage.colonne-liens"
+    }
+  }
+}

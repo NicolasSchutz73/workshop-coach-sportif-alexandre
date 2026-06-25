@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_partage_entetes_page",
+  "info": {
+    "displayName": "En-tête de page",
+    "icon": "heading"
+  },
+  "options": {},
+  "attributes": {
+    "surtitre": {
+      "type": "string",
+      "required": true
+    },
+    "titre": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

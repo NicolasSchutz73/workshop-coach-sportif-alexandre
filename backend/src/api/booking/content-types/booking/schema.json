@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookings",
+  "info": {
+    "singularName": "booking",
+    "pluralName": "bookings",
+    "displayName": "Réservation",
+    "description": "Demandes de réservation envoyées par les clients"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "clientName": {
+      "type": "string",
+      "required": true
+    },
+    "clientEmail": {
+      "type": "email",
+      "required": true
+    },
+    "clientPhone": {
+      "type": "string",
+      "required": true
+    },
+    "message": {
+      "type": "text"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "confirmed",
+        "cancelled"
+      ],
+      "required": true,
+      "default": "pending"
+    },
+    "timeSlot": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::time-slot.time-slot",
+      "inversedBy": "booking",
+      "required": true
+    },
+    "sessionType": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::session-type.session-type",
+      "inversedBy": "bookings",
+      "required": true
+    }
+  }
+}

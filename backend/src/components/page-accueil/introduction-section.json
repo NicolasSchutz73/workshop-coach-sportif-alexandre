@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_page_accueil_introductions_section",
+  "info": {
+    "displayName": "Introduction de section",
+    "icon": "heading"
+  },
+  "options": {},
+  "attributes": {
+    "surtitre": {
+      "type": "string"
+    },
+    "titre": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "bouton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    }
+  }
+}

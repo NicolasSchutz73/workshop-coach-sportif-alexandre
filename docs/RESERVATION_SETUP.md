@@ -43,7 +43,7 @@ champ supplémentaire au nom et à l’e-mail. Le téléphone est transmis lorsq
 est renseigné, au format international E.164 (par exemple `+33612345678`), et
 le message facultatif est enregistré dans les métadonnées de la réservation.
 
-Côté Strapi, à définir dans `/Users/nicolasschutz/Projets/Université/M2/Workshop2/backend/.env` :
+Côté Strapi, à définir dans `backend/.env` :
 
 ```env
 SMTP_HOST=smtp.gmail.com

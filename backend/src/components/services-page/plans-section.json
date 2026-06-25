@@ -1,0 +1,90 @@
+{
+  "collectionName": "components_services_page_plans_sections",
+  "info": {
+    "displayName": "2. E-books et plans",
+    "icon": "book"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "plans": {
+      "type": "component",
+      "repeatable": true,
+      "component": "services-page.plan",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imageAlt": {
+      "type": "string"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "eyebrow": {
+        "edit": {
+          "label": "Surtitre"
+        },
+        "list": {
+          "label": "Surtitre"
+        }
+      },
+      "title": {
+        "edit": {
+          "label": "Titre"
+        },
+        "list": {
+          "label": "Titre"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      },
+      "plans": {
+        "edit": {
+          "label": "Plans disponibles"
+        },
+        "list": {
+          "label": "Plans"
+        }
+      },
+      "image": {
+        "edit": {
+          "label": "Image"
+        },
+        "list": {
+          "label": "Image"
+        }
+      },
+      "imageAlt": {
+        "edit": {
+          "label": "Texte alternatif de l'image"
+        },
+        "list": {
+          "label": "Texte alternatif"
+        }
+      }
+    }
+  }
+}

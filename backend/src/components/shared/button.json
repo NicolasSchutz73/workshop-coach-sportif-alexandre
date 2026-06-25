@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_shared_buttons",
+  "info": {
+    "displayName": "Bouton",
+    "icon": "cursor"
+  },
+  "options": {},
+  "config": {
+    "metadatas": {
+      "label": {
+        "edit": {
+          "label": "Libellé"
+        },
+        "list": {
+          "label": "Libellé"
+        }
+      },
+      "href": {
+        "edit": {
+          "label": "Lien"
+        },
+        "list": {
+          "label": "Lien"
+        }
+      }
+    }
+  },
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

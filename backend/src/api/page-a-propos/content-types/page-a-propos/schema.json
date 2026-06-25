@@ -1,0 +1,98 @@
+{
+  "kind": "singleType",
+  "collectionName": "pages_a_propos",
+  "info": {
+    "singularName": "page-a-propos",
+    "pluralName": "pages-a-propos",
+    "displayName": "Page À propos",
+    "description": "Contenu administrable de la page À propos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nomInterne": {
+      "type": "string",
+      "required": true,
+      "default": "Page À propos"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo",
+      "required": true
+    },
+    "entete": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.entete-page",
+      "required": true
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "texteAlternatifPhoto": {
+      "type": "string",
+      "required": true
+    },
+    "titreParcours": {
+      "type": "string",
+      "required": true
+    },
+    "parcours": {
+      "type": "blocks",
+      "required": true
+    },
+    "titreCertifications": {
+      "type": "string",
+      "required": true
+    },
+    "certifications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.certification",
+      "required": true
+    },
+    "titreReseaux": {
+      "type": "string",
+      "required": true
+    },
+    "reseaux": {
+      "type": "component",
+      "repeatable": true,
+      "component": "partage.reseau-social",
+      "required": true
+    },
+    "titrePhilosophie": {
+      "type": "string",
+      "required": true
+    },
+    "principes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "page-a-propos.principe",
+      "required": true
+    },
+    "titreAppelAction": {
+      "type": "string",
+      "required": true
+    },
+    "boutonPrincipal": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button",
+      "required": true
+    },
+    "boutonSecondaire": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button",
+      "required": true
+    }
+  }
+}

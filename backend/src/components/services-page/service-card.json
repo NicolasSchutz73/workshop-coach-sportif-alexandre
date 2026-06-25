@@ -1,0 +1,150 @@
+{
+  "collectionName": "components_services_page_service_cards",
+  "info": {
+    "displayName": "Prestation",
+    "icon": "briefcase"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "string",
+      "required": true
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "price": {
+      "type": "decimal"
+    },
+    "priceNote": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.feature"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "button": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button",
+      "required": true
+    },
+    "featuredLabel": {
+      "type": "string"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "title": {
+        "edit": {
+          "label": "Titre"
+        },
+        "list": {
+          "label": "Titre"
+        }
+      },
+      "slug": {
+        "edit": {
+          "label": "Identifiant technique"
+        },
+        "list": {
+          "label": "Identifiant"
+        }
+      },
+      "tagline": {
+        "edit": {
+          "label": "Accroche"
+        },
+        "list": {
+          "label": "Accroche"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      },
+      "price": {
+        "edit": {
+          "label": "Prix"
+        },
+        "list": {
+          "label": "Prix"
+        }
+      },
+      "priceNote": {
+        "edit": {
+          "label": "Précision sur le prix"
+        },
+        "list": {
+          "label": "Précision tarifaire"
+        }
+      },
+      "duration": {
+        "edit": {
+          "label": "Durée"
+        },
+        "list": {
+          "label": "Durée"
+        }
+      },
+      "featured": {
+        "edit": {
+          "label": "Mettre en avant"
+        },
+        "list": {
+          "label": "Mise en avant"
+        }
+      },
+      "features": {
+        "edit": {
+          "label": "Points clés"
+        },
+        "list": {
+          "label": "Points clés"
+        }
+      },
+      "image": {
+        "edit": {
+          "label": "Image"
+        },
+        "list": {
+          "label": "Image"
+        }
+      },
+      "button": {
+        "edit": {
+          "label": "Bouton"
+        },
+        "list": {
+          "label": "Bouton"
+        }
+      }
+    }
+  }
+}

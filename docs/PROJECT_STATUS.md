@@ -1,8 +1,8 @@
 # Etat du projet face a la note de cadrage
 
 Audit realise le 25 juin 2026 a partir de `note_de_cadrage_schutz_alexandre.pdf`,
-du frontend `alexandre-coach` et du backend Strapi voisin
-`/Users/nicolasschutz/Projets/Université/M2/Workshop2/backend`.
+du frontend Next.js a la racine du depot et du backend Strapi versionne dans
+`backend/`.
 
 ## Synthese
 

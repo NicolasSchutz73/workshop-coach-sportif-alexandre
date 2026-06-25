@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_page_contact_horaires",
+  "info": {
+    "displayName": "Horaire",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "jours": {
+      "type": "string",
+      "required": true
+    },
+    "heures": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
