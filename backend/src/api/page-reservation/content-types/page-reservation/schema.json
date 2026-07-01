@@ -39,29 +39,6 @@
       "component": "partage.element-liste",
       "required": true
     },
-    "reassurances": {
-      "type": "component",
-      "repeatable": true,
-      "component": "page-reservation.reassurance",
-      "required": true
-    },
-    "typesSeance": {
-      "type": "component",
-      "repeatable": true,
-      "component": "page-reservation.type-seance",
-      "required": true
-    },
-    "creneaux": {
-      "type": "component",
-      "repeatable": true,
-      "component": "partage.element-liste",
-      "required": true
-    },
-    "joursFermes": {
-      "type": "component",
-      "repeatable": true,
-      "component": "page-reservation.jour-ferme"
-    },
     "texteSansPaiement": {
       "type": "text",
       "required": true

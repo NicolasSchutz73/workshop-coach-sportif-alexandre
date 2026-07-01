@@ -8,12 +8,16 @@ import type { Service } from '@/lib/services'
 import type { SectionIntroContent } from '@/lib/homepage'
 import { cn } from '@/lib/utils'
 
+const pageFadeTransition = ['page-fade']
+
 type ServicesPreviewProps = {
   services: Service[]
   intro: SectionIntroContent
 }
 
 export function ServicesPreview({ services, intro }: ServicesPreviewProps) {
+  const introHref = intro.button?.href ?? '/services'
+
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-24">
       <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -22,15 +26,26 @@ export function ServicesPreview({ services, intro }: ServicesPreviewProps) {
           title={intro.title}
           description={intro.description}
         />
-        <Button asChild variant="ghost" className="hidden shrink-0 rounded-full sm:inline-flex">
-          <Link href={intro.button?.href ?? '/services'}>
+        <Button
+          asChild
+          variant="ghost"
+          className="hidden shrink-0 rounded-full sm:inline-flex"
+        >
+          <Link
+            href={introHref}
+            transitionTypes={
+              introHref.startsWith('/') && !introHref.includes('#')
+                ? pageFadeTransition
+                : undefined
+            }
+          >
             {intro.button?.label ?? 'Toutes les prestations'}
             <ArrowRight className="size-4" />
           </Link>
         </Button>
       </Reveal>
 
-      <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <StaggerGroup className="mt-12 flex flex-col gap-5 lg:grid lg:grid-cols-3 lg:items-stretch">
         {services.map((service) => (
           <ServicePreviewCard key={service.slug} service={service} />
         ))}
@@ -38,7 +53,14 @@ export function ServicesPreview({ services, intro }: ServicesPreviewProps) {
 
       <div className="mt-8 sm:hidden">
         <Button asChild variant="outline" className="w-full rounded-full">
-          <Link href={intro.button?.href ?? '/services'}>
+          <Link
+            href={introHref}
+            transitionTypes={
+              introHref.startsWith('/') && !introHref.includes('#')
+                ? pageFadeTransition
+                : undefined
+            }
+          >
             {intro.button?.label ?? 'Toutes les prestations'}
             <ArrowRight className="size-4" />
           </Link>
@@ -54,42 +76,86 @@ function ServicePreviewCard({ service }: { service: Service }) {
   return (
     <StaggerItem
       className={cn(
-        'flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-md',
-        service.featured && 'border-primary/40 ring-1 ring-primary/20',
+        'group flex flex-col rounded-2xl border p-7',
+        service.featured
+          ? 'bg-primary text-primary-foreground shadow-lg lg:-my-2 lg:py-9'
+          : 'border-border bg-card shadow-sm hover:shadow-md',
       )}
     >
-      <div className="flex size-11 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
-        <service.icon className="size-5" />
-      </div>
-      <h3 className="mt-5 font-heading text-lg font-semibold">
-        {service.name}
-      </h3>
-      <div className="mt-2 flex items-baseline gap-1">
-        <span className="font-heading text-2xl font-bold">
+      {service.featured && (
+        <span className="mb-5 inline-flex w-fit rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground">
+          {service.featuredLabel ?? 'Le plus populaire'}
+        </span>
+      )}
+      <h3 className="font-heading text-xl font-bold">{service.name}</h3>
+      <p
+        className={cn(
+          'mt-1 text-sm',
+          service.featured
+            ? 'text-primary-foreground/75'
+            : 'text-muted-foreground',
+        )}
+      >
+        {service.tagline}
+      </p>
+      <div className="mt-5 flex items-baseline gap-1">
+        <span className="font-heading text-3xl font-extrabold tracking-tight">
           {service.price}
         </span>
-        <span className="text-sm text-muted-foreground">
+        <span
+          className={cn(
+            'text-sm',
+            service.featured
+              ? 'text-primary-foreground/75'
+              : 'text-muted-foreground',
+          )}
+        >
           {service.priceNote}
         </span>
       </div>
-      <ul className="mt-5 flex-1 space-y-2.5">
-        {service.features.slice(0, 4).map((feature) => (
-          <li
-            key={feature}
-            className="flex items-start gap-2 text-sm text-muted-foreground"
-          >
-            <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-            <span>{feature}</span>
+      <p
+        className={cn(
+          'mt-4 text-pretty text-sm leading-relaxed',
+          service.featured
+            ? 'text-primary-foreground/85'
+            : 'text-muted-foreground',
+        )}
+      >
+        {service.description}
+      </p>
+      <ul className="mt-6 flex-1 space-y-3">
+        {service.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2.5 text-sm">
+            <Check
+              className={cn(
+                'mt-0.5 size-4 shrink-0',
+                service.featured ? 'text-primary-foreground' : 'text-primary',
+              )}
+            />
+            <span
+              className={service.featured ? 'text-primary-foreground/90' : ''}
+            >
+              {feature}
+            </span>
           </li>
         ))}
       </ul>
       <Button
         asChild
-        variant={service.featured ? 'default' : 'outline'}
-        className="mt-6 rounded-full"
+        variant={service.featured ? 'secondary' : 'outline'}
+        className={cn(
+          'mt-7 h-11 rounded-full',
+          service.featured &&
+            'bg-primary-foreground text-primary hover:bg-primary-foreground/90',
+        )}
       >
         <Link
           href={service.ctaHref}
+          transitionTypes={
+            service.ctaHref.startsWith('/') && !service.ctaHref.includes('#')
+              ? pageFadeTransition
+              : undefined
+          }
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noreferrer' : undefined}
         >

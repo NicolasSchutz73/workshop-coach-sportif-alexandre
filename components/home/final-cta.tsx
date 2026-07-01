@@ -8,7 +8,7 @@ type FinalCtaProps = { content: FinalCtaContent }
 export function FinalCta({ content }: FinalCtaProps) {
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-20">
-      <div className="relative isolate overflow-hidden rounded-[2rem]">
+      <div className="relative isolate overflow-hidden rounded-2xl">
         <ParallaxImage
           src={content.imageUrl}
           alt={content.imageAlt}

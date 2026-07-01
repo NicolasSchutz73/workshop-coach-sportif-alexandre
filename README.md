@@ -1,91 +1,91 @@
-# Alexandre Schutz — site de coaching running et trail
+# Alexandre Schutz Coaching
 
-Monorepo du site vitrine d’Alexandre Schutz :
+Site vitrine réalisé pour l'activité de coaching running et trail d'Alexandre Schutz.
 
-- frontend Next.js 16 à la racine du dépôt ;
-- backend Strapi dans `backend/`.
+Le projet regroupe :
 
-Le site utilise Strapi pour le contenu éditorial, Lemon Squeezy pour les
-e-books et Cal.com pour les réservations.
+- un frontend Next.js pour les pages publiques ;
+- un back-office Strapi pour administrer les contenus ;
+- une réservation connectée à Cal.com ;
+- un formulaire de contact envoyé par SMTP ;
+- la vente de plans d'entraînement avec Lemon Squeezy.
 
-## Démarrage
+## Stack
 
-Frontend :
+- Next.js 16, React 19 et TypeScript
+- Tailwind CSS
+- Strapi 5
+- Vitest et Playwright
+
+## Installation
+
+Le projet utilise Node.js 20 à 24 et npm.
+
+Installer les dépendances du frontend :
 
 ```bash
 npm install
-npm run dev
 ```
 
-Backend Strapi :
+Installer celles du backend :
 
 ```bash
 cd backend
 npm install
+cd ..
+```
+
+Créer ensuite les fichiers d'environnement :
+
+```bash
+cp .env.example .env.local
+cp backend/.env.example backend/.env
+```
+
+Les valeurs par défaut permettent de travailler en local. Les fonctions liées à Strapi, Cal.com, Lemon Squeezy et aux e-mails nécessitent leurs identifiants respectifs.
+
+## Lancer le projet
+
+Dans un premier terminal, démarrer Strapi :
+
+```bash
+cd backend
 npm run dev
 ```
 
-Le site est disponible sur `http://localhost:3000` en développement Next.js.
-Strapi est disponible sur `http://localhost:1337`. Vérifications disponibles :
+Dans un second terminal, démarrer Next.js :
 
 ```bash
-npm run lint
-npm run build
-cd backend && npm run build
+npm run dev
 ```
 
-## Architecture fonctionnelle
+Le site est disponible sur [http://localhost:3000](http://localhost:3000) et l'administration Strapi sur [http://localhost:1337/admin](http://localhost:1337/admin).
 
-- `/reservation` : réservation via l’API Cal.com. C’est la destination utilisée
-  par les CTA publics.
-- `/plans/[slug]` : pages de plans d’entraînement ; le checkout est créé par
-  Lemon Squeezy.
-- `lib/` : accès Strapi, Cal.com, Lemon Squeezy et données de repli.
+Si Strapi n'est pas disponible, le frontend utilise des contenus de repli définis dans `lib/`.
 
-Le contenu reste affichable avec ses valeurs de repli quand Strapi est
-indisponible. Les routes de création (`/api/contact`, `/api/cal/*` et
-`/api/ebooks/checkout`) nécessitent toutefois leurs variables serveur.
+## Organisation
 
-## Configuration
-
-Copier les variables nécessaires dans `.env.local`, sans jamais leur donner le
-préfixe `NEXT_PUBLIC_` lorsqu’elles sont secrètes :
-
-```dotenv
-STRAPI_URL=http://localhost:1337
-STRAPI_PUBLIC_URL=http://localhost:1337
-STRAPI_API_TOKEN=
-STRAPI_REVALIDATE_SECONDS=60
-
-SMTP_HOST=smtp.example.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USERNAME=
-SMTP_PASSWORD=
-EMAIL_DEFAULT_FROM="Alexandre Coach <coach@example.com>"
-COACH_EMAIL=
-
-CAL_API_KEY=
-CAL_API_BASE_URL=https://api.cal.eu
-CAL_API_VERSION=2024-09-04
-CAL_BOOKINGS_API_VERSION=2024-08-13
-CAL_EVENT_USERNAME=nicolas-schutz-zdf9fu
-CAL_EVENT_TYPE_SLUG=appel-decouverte
-
-LEMONSQUEEZY_API_KEY=
-LEMONSQUEEZY_STORE_ID=
-LEMONSQUEEZY_VARIANT_PLAN_10_KM=
-LEMONSQUEEZY_VARIANT_PLAN_SEMI_MARATHON=
-LEMONSQUEEZY_VARIANT_PLAN_MARATHON=
-LEMONSQUEEZY_VARIANT_PLAN_TRAIL_DECOUVERTE=
-LEMONSQUEEZY_TEST_MODE=true
+```text
+app/          pages et routes API Next.js
+components/   composants d'interface
+lib/          accès aux services et contenus de repli
+public/       images publiques
+assets/       fichiers sources des plans d'entraînement
+backend/      application Strapi
+tests/        tests unitaires, API et end-to-end
 ```
 
-Documentation opérationnelle :
+Les principales pages publiques sont l'accueil, les prestations, la présentation du coach, le contact, la réservation et les fiches des plans d'entraînement.
 
-- [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md), pour l'état du projet face
-  à la note de cadrage et le reste à faire avant livraison.
-- [`docs/RESERVATION_SETUP.md`](docs/RESERVATION_SETUP.md)
-- [`docs/LEMONSQUEEZY_SETUP.md`](docs/LEMONSQUEEZY_SETUP.md)
-- [`docs/STRAPI_PLANS.md`](docs/STRAPI_PLANS.md)
-- [`CONTEXT.md`](CONTEXT.md), pour le vocabulaire et le périmètre produit.
+## Commandes utiles
+
+```bash
+npm run lint       # analyse ESLint
+npm run typecheck  # vérification TypeScript
+npm run test       # tests Vitest
+npm run test:e2e   # tests Playwright
+npm run build      # build du frontend
+npm run check      # vérification complète frontend et backend
+```
+
+Pour tester les parcours complets, le frontend et Strapi doivent être lancés et les services externes configurés dans les fichiers d'environnement.

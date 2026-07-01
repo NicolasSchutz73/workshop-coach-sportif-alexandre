@@ -50,14 +50,15 @@ export function PlanPreviewCarousel({ plan }: PlanPreviewCarouselProps) {
 
   return (
     <section aria-label="Aperçu du plan" className="relative mx-auto w-full max-w-md">
-      <div className="relative aspect-[3/4] overflow-hidden rounded-[22px] bg-muted">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-muted">
         <Image
           src={active.image.url}
           alt={active.image.alt}
           fill
+          loading="eager"
           sizes="(min-width: 1024px) 42vw, 92vw"
           className="object-cover"
-          priority
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-foreground/10" />
         {active.overlay}

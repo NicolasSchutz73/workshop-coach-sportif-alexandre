@@ -29,11 +29,11 @@ export function Testimonials({ intro, testimonials }: TestimonialsProps) {
           <StaggerItem
             as="figure"
             key={`${testimonial.name}-${testimonial.detail}`}
-            className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm hover:shadow-md"
           >
             <div
               className="flex gap-0.5"
-              aria-label={`${testimonial.rating} sur 5`}
+              aria-hidden="true"
             >
               {Array.from({ length: testimonial.rating }).map((_, index) => (
                 <Star
@@ -42,6 +42,9 @@ export function Testimonials({ intro, testimonials }: TestimonialsProps) {
                 />
               ))}
             </div>
+            <span className="sr-only">
+              Note : {testimonial.rating} sur 5
+            </span>
             <blockquote className="mt-4 flex-1 text-pretty leading-relaxed text-foreground">
               “{testimonial.quote}”
             </blockquote>

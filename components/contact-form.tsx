@@ -27,13 +27,14 @@ function Field({ id, label, type = "text", placeholder, optional }: FieldProps) 
         type={type}
         required={!optional}
         placeholder={placeholder}
-        className="h-11 w-full rounded-2xl border border-border bg-transparent px-4 text-[15px] text-foreground outline-none transition-all placeholder:text-muted-foreground/70 hover:border-foreground/30 focus:border-primary focus:ring-4 focus:ring-primary/10"
+        className="h-11 w-full rounded-xl border border-border bg-transparent px-4 text-[15px] text-foreground outline-none transition-all placeholder:text-muted-foreground/70 hover:border-foreground/30 focus:border-primary focus:ring-4 focus:ring-primary/10"
       />
     </div>
   )
 }
 
-export function ContactForm() {
+export function ContactForm({ objectives, privacyText }: { objectives: string[]; privacyText: string }) {
+  const [formStartedAt] = useState(() => Date.now())
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -57,7 +58,9 @@ export function ContactForm() {
           email: String(formData.get("email") ?? ""),
           phone: String(formData.get("phone") ?? ""),
           message: String(formData.get("message") ?? ""),
+          objective: String(formData.get("objective") ?? ""),
           contactVerification: String(formData.get("contactVerification") ?? ""),
+          formStartedAt: Number(formData.get("formStartedAt")),
         }),
       })
       const payload = (await response.json().catch(() => null)) as {
@@ -85,7 +88,7 @@ export function ContactForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-[2rem] border border-border/60 bg-card/70 p-7 text-center shadow-[0_20px_60px_-25px_rgba(31,81,50,0.35)] backdrop-blur-xl">
+      <div className="rounded-2xl border border-border/60 bg-card/70 p-7 text-center shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex size-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
           <Check className="size-5" aria-hidden="true" />
         </div>
@@ -109,7 +112,7 @@ export function ContactForm() {
 
   return (
     <form
-      className="relative rounded-[2rem] border border-border/60 bg-card/70 p-5 shadow-[0_20px_60px_-25px_rgba(31,81,50,0.35)] backdrop-blur-xl sm:p-6"
+      className="relative rounded-2xl border border-border/60 bg-card/70 p-5 shadow-sm backdrop-blur-xl sm:p-6"
       onSubmit={handleSubmit}
     >
       <div className="absolute -left-[10000px] top-auto size-px overflow-hidden" aria-hidden="true">
@@ -121,11 +124,20 @@ export function ContactForm() {
           autoComplete="new-password"
         />
       </div>
+      <input type="hidden" name="formStartedAt" value={formStartedAt} />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field id="firstName" label="Prénom" placeholder="Camille" />
         <Field id="lastName" label="Nom" placeholder="Durand" />
         <Field id="email" label="Email" type="email" placeholder="camille@email.fr" />
         <Field id="phone" label="Téléphone" type="tel" placeholder="06 12 34 56 78" optional />
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <label htmlFor="objective" className="block text-sm font-medium text-foreground/80">Votre besoin</label>
+        <select id="objective" name="objective" required defaultValue="" className="h-11 w-full rounded-xl border border-border bg-card px-4 text-[15px] outline-none focus:border-primary focus:ring-4 focus:ring-primary/10">
+          <option value="" disabled>Sélectionnez un sujet</option>
+          {objectives.map((objective) => <option key={objective} value={objective}>{objective}</option>)}
+        </select>
       </div>
 
       <div className="mt-4 space-y-2">
@@ -138,14 +150,14 @@ export function ContactForm() {
           required
           rows={3}
           placeholder="Parlez-moi de votre projet, votre niveau actuel et vos disponibilités…"
-          className="w-full resize-none rounded-2xl border border-border bg-transparent px-4 py-3.5 text-[15px] leading-relaxed text-foreground outline-none transition-all placeholder:text-muted-foreground/70 hover:border-foreground/30 focus:border-primary focus:ring-4 focus:ring-primary/10"
+          className="w-full resize-none rounded-xl border border-border bg-transparent px-4 py-3.5 text-[15px] leading-relaxed text-foreground outline-none transition-all placeholder:text-muted-foreground/70 hover:border-foreground/30 focus:border-primary focus:ring-4 focus:ring-primary/10"
         />
       </div>
 
       <Button
         type="submit"
         size="lg"
-        className="mt-4 h-11 w-full rounded-2xl text-base shadow-[0_12px_30px_-10px_rgba(31,81,50,0.6)] transition-transform hover:-translate-y-0.5"
+        className="mt-4 h-11 w-full rounded-full text-base shadow-sm"
         disabled={isSubmitting}
       >
         {isSubmitting ? (
@@ -166,7 +178,7 @@ export function ContactForm() {
         </p>
       ) : null}
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        Vos informations restent confidentielles et ne sont jamais partagées.
+        {privacyText}
       </p>
     </form>
   )

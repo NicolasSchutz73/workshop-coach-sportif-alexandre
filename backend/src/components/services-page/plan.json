@@ -23,10 +23,6 @@
       "type": "string",
       "required": true
     },
-    "price": {
-      "type": "decimal",
-      "required": true
-    },
     "button": {
       "type": "component",
       "repeatable": false,
@@ -56,11 +52,6 @@
       "type": "component",
       "repeatable": true,
       "component": "services-page.plan-list-item"
-    },
-    "receives": {
-      "type": "component",
-      "repeatable": true,
-      "component": "services-page.plan-list-item"
     }
   },
   "config": {
@@ -87,14 +78,6 @@
         },
         "list": {
           "label": "Détail"
-        }
-      },
-      "price": {
-        "edit": {
-          "label": "Prix"
-        },
-        "list": {
-          "label": "Prix"
         }
       },
       "button": {
@@ -128,10 +111,6 @@
       "tableOfContents": {
         "edit": { "label": "Sommaire" },
         "list": { "label": "Sommaire" }
-      },
-      "receives": {
-        "edit": { "label": "Vous allez recevoir" },
-        "list": { "label": "Contenu livré" }
       }
     }
   }

@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button'
 import type { CtaButtonContent } from '@/lib/homepage'
 import { cn } from '@/lib/utils'
 
+const pageFadeTransition = ['page-fade']
+
 type CtaLinkProps = {
   content: CtaButtonContent
   variant?: 'default' | 'outline'
@@ -24,7 +26,14 @@ export function CtaLink({
       variant={variant}
       className={cn('h-12 rounded-full px-7 text-base', className)}
     >
-      <Link href={content.href}>
+      <Link
+        href={content.href}
+        transitionTypes={
+          content.href.startsWith('/') && !content.href.includes('#')
+            ? pageFadeTransition
+            : undefined
+        }
+      >
         {content.label}
         {showArrow && <ArrowRight className="size-4" />}
       </Link>

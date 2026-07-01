@@ -59,6 +59,7 @@ export function EbookCheckoutButton({
       }
 
       checkoutWindow.location.replace(payload.url)
+      setIsRedirecting(false)
     } catch (error) {
       checkoutWindow?.close()
       setErrorMessage(

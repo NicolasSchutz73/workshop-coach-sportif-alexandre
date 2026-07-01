@@ -46,10 +46,34 @@ export function splitKeywords(value?: string | null) {
   )
 }
 
-export function metadataFromSeo(seo: SeoContent): Metadata {
+export function metadataFromSeo(seo: SeoContent, pathname = '/'):
+  Metadata {
   return {
     title: seo.title,
     description: seo.description,
     keywords: seo.keywords,
+    alternates: { canonical: pathname },
+    openGraph: {
+      type: 'website',
+      locale: 'fr_FR',
+      url: pathname,
+      title: seo.title,
+      description: seo.description,
+      siteName: 'Alexandre Schutz Coaching',
+      images: [
+        {
+          url: '/images/hero-trail.jpg',
+          width: 1200,
+          height: 630,
+          alt: 'Alexandre Schutz, coach running et trail en Savoie',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seo.title,
+      description: seo.description,
+      images: ['/images/hero-trail.jpg'],
+    },
   }
 }

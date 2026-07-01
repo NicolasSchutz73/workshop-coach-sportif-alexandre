@@ -415,7 +415,8 @@ function normalizeButton(
   }
 }
 
-function mapHomepage(data: StrapiHomepage): HomepageContent {
+export function mapHomepage(data: StrapiHomepage): HomepageContent {
+  const heroImage = normalizeImage(data.hero?.image)
   const aboutImage = normalizeImage(data.aboutPreview?.image)
   const finalCtaImage = normalizeImage(data.finalCta?.image)
   const benefits =
@@ -480,8 +481,9 @@ function mapHomepage(data: StrapiHomepage): HomepageContent {
         seoKeywords.length > 0 ? seoKeywords : fallbackHomepageSeo.keywords,
     },
     hero: {
-      bannerImageUrl: fallbackHomepageHero.bannerImageUrl,
-      bannerImageAlt: fallbackHomepageHero.bannerImageAlt,
+      bannerImageUrl: heroImage?.url || fallbackHomepageHero.bannerImageUrl,
+      bannerImageAlt:
+        heroImage?.alt?.trim() || fallbackHomepageHero.bannerImageAlt,
       location:
         data.hero?.location?.trim() || fallbackHomepageHero.location,
       title: data.hero?.title?.trim() || fallbackHomepageHero.title,
@@ -612,7 +614,7 @@ function mapHomepage(data: StrapiHomepage): HomepageContent {
 export async function getHomepageContent(): Promise<HomepageContent> {
   try {
     const response = await strapiFetch<StrapiSingleResponse<StrapiHomepage>>(
-      '/homepage?populate[seo]=true&populate[hero][populate][primaryButton]=true&populate[hero][populate][secondaryButton]=true&populate[benefits]=true&populate[introductionPrestations][populate][bouton]=true&populate[aboutPreview][populate][image]=true&populate[aboutPreview][populate][certifications]=true&populate[aboutPreview][populate][button]=true&populate[introductionTemoignages]=true&populate[temoignages]=true&populate[introductionFaq]=true&populate[faqs]=true&populate[finalCta][populate][primaryButton]=true&populate[finalCta][populate][secondaryButton]=true&populate[finalCta][populate][image]=true',
+      '/homepage?populate[seo]=true&populate[hero][populate][image]=true&populate[hero][populate][primaryButton]=true&populate[hero][populate][secondaryButton]=true&populate[benefits]=true&populate[introductionPrestations][populate][bouton]=true&populate[aboutPreview][populate][image]=true&populate[aboutPreview][populate][certifications]=true&populate[aboutPreview][populate][button]=true&populate[introductionTemoignages]=true&populate[temoignages]=true&populate[introductionFaq]=true&populate[faqs]=true&populate[finalCta][populate][primaryButton]=true&populate[finalCta][populate][secondaryButton]=true&populate[finalCta][populate][image]=true',
       {
         next: {
           revalidate: Number(process.env.STRAPI_REVALIDATE_SECONDS ?? 60),

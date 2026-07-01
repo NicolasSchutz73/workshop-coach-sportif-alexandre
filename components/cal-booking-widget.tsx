@@ -151,6 +151,7 @@ function formError(form: BookingForm) {
 
 export function CalBookingWidget({ noPaymentText, className }: CalBookingWidgetProps) {
   const [initialMonth] = useState(() => currentMonth())
+  const [formStartedAt] = useState(() => Date.now())
   const requestId = useRef(0)
   const confirmationRef = useRef<HTMLElement>(null)
   const monthCache = useRef(new Map<string, CachedMonth>())
@@ -286,6 +287,8 @@ export function CalBookingWidget({ noPaymentText, className }: CalBookingWidgetP
           email: form.email.trim(),
           ...(form.phone.trim() ? { phone: form.phone.trim() } : {}),
           ...(form.message.trim() ? { message: form.message.trim() } : {}),
+          bookingVerification: '',
+          formStartedAt,
         }),
       })
       const payload = (await response.json().catch(() => null)) as {
@@ -346,7 +349,7 @@ export function CalBookingWidget({ noPaymentText, className }: CalBookingWidgetP
       ref={confirmation ? confirmationRef : undefined}
       tabIndex={confirmation ? -1 : undefined}
       className={cn(
-        'scroll-mt-24 flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm outline-none',
+        'scroll-mt-24 flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm outline-none',
         className,
       )}
       aria-labelledby="cal-booking-title"

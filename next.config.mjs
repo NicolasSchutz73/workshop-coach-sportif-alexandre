@@ -21,18 +21,27 @@ const remotePatterns = [
   toRemotePattern(process.env.NEXT_PUBLIC_STRAPI_URL),
 ].filter(Boolean)
 
+const hasLocalImageHost = remotePatterns.some(
+  ({ hostname }) => hostname === 'localhost' || hostname === '127.0.0.1',
+)
+
 const allowedDevOrigins = [
   process.env.NEXT_DEV_ALLOWED_ORIGIN ?? '192.168.1.29',
 ]
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: process.env.NEXT_DIST_DIR ?? '.next',
   allowedDevOrigins,
-  typescript: {
-    ignoreBuildErrors: true,
+  turbopack: {
+    root: process.cwd(),
+  },
+  experimental: {
+    viewTransition: true,
   },
   images: {
-    unoptimized: true,
+    dangerouslyAllowLocalIP: hasLocalImageHost,
+    qualities: [40, 60, 75],
     remotePatterns,
   },
 }

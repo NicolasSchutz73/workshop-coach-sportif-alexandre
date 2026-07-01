@@ -5,6 +5,7 @@ import { legalPages } from '@/lib/legal-pages'
 export const metadata: Metadata = {
   title: 'Politique de confidentialité',
   description: legalPages.privacy.description,
+  alternates: { canonical: '/politique-confidentialite' },
 }
 
 export default function PolitiqueConfidentialitePage() {

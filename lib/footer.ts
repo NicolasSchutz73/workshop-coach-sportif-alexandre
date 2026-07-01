@@ -1,12 +1,13 @@
 import { strapiFetch } from '@/lib/strapi'
 import { normalizeInternalHref } from '@/lib/routes'
+import { configuredSocialLink } from '@/lib/social-links'
 
 export type FooterContent = {
   brandName: string
   description: string
-  instagramUrl: string
-  whatsappUrl: string
-  nolioUrl: string
+  instagramUrl?: string
+  whatsappUrl?: string
+  nolioUrl?: string
   copyrightText: string
   locationText: string
   columns: Array<{
@@ -25,9 +26,9 @@ export const fallbackFooter: FooterContent = {
   brandName: 'Alexandre Schutz',
   description:
     'Coach running & trail indépendant. Chambéry, Aix-les-Bains, Lac du Bourget et massifs de Savoie.',
-  instagramUrl: 'https://instagram.com',
-  whatsappUrl: 'https://wa.me/33600000000',
-  nolioUrl: 'https://nolio.io',
+  instagramUrl: undefined,
+  whatsappUrl: undefined,
+  nolioUrl: 'https://www.nolio.io/coach/alexandre.schutz.63155/',
   copyrightText: 'Alexandre Schutz Coaching. Tous droits réservés.',
   locationText: 'Chambéry · Savoie · France',
   columns: [
@@ -115,9 +116,9 @@ export async function getFooter(): Promise<FooterContent> {
     return {
       brandName: data.brandName?.trim() || fallbackFooter.brandName,
       description: data.description?.trim() || fallbackFooter.description,
-      instagramUrl: data.instagramUrl?.trim() || fallbackFooter.instagramUrl,
-      whatsappUrl: data.whatsappUrl?.trim() || fallbackFooter.whatsappUrl,
-      nolioUrl: data.nolioUrl?.trim() || fallbackFooter.nolioUrl,
+      instagramUrl: configuredSocialLink(data.instagramUrl),
+      whatsappUrl: configuredSocialLink(data.whatsappUrl),
+      nolioUrl: configuredSocialLink(data.nolioUrl),
       copyrightText:
         data.copyrightText?.trim() || fallbackFooter.copyrightText,
       locationText: data.locationText?.trim() || fallbackFooter.locationText,

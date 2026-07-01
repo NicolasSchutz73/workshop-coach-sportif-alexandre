@@ -1,6 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { getCalSlots } from '@/lib/cal'
+import { isRateLimited, rateLimitResponse } from '@/lib/request-security'
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
 const SLOTS_CACHE_TTL = 30_000
@@ -99,6 +100,9 @@ async function getCachedCalSlots(start: string, end: string) {
 }
 
 export async function GET(request: NextRequest) {
+  if (isRateLimited(request, 'cal-slots', 120, 60_000)) {
+    return rateLimitResponse()
+  }
   const parsed = querySchema.safeParse({
     start: request.nextUrl.searchParams.get('start'),
     end: request.nextUrl.searchParams.get('end'),

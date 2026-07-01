@@ -1,7 +1,6 @@
 import type { Core } from '@strapi/strapi';
 
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => {
-  const isProduction = env('NODE_ENV') === 'production';
   const smtpHost = env('SMTP_HOST');
   const smtpUsername = env('SMTP_USERNAME');
   const smtpPassword = env('SMTP_PASSWORD');
@@ -31,15 +30,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
 
   return {
     ...emailConfig,
-    mcp: {
-      enabled: !isProduction,
-      config: {
-        session: {
-          type: 'memory',
-        },
-        allowedIPs: ['127.0.0.1', '::1'],
-      },
-    },
   };
 };
 

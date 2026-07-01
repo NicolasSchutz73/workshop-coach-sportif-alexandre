@@ -114,43 +114,6 @@ export interface AdminApiTokenPermission extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface AdminAuditLog extends Struct.CollectionTypeSchema {
-  collectionName: 'strapi_audit_logs';
-  info: {
-    displayName: 'Audit Log';
-    pluralName: 'audit-logs';
-    singularName: 'audit-log';
-  };
-  options: {
-    draftAndPublish: false;
-    timestamps: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    action: Schema.Attribute.String & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    date: Schema.Attribute.DateTime & Schema.Attribute.Required;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'admin::audit-log'> &
-      Schema.Attribute.Private;
-    payload: Schema.Attribute.JSON;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    user: Schema.Attribute.Relation<'oneToOne', 'admin::user'>;
-  };
-}
-
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -477,53 +440,6 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
-  collectionName: 'bookings';
-  info: {
-    description: 'Demandes de r\u00E9servation envoy\u00E9es par les clients';
-    displayName: 'R\u00E9servation';
-    pluralName: 'bookings';
-    singularName: 'booking';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    clientEmail: Schema.Attribute.Email & Schema.Attribute.Required;
-    clientName: Schema.Attribute.String & Schema.Attribute.Required;
-    clientPhone: Schema.Attribute.String & Schema.Attribute.Required;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::booking.booking'
-    > &
-      Schema.Attribute.Private;
-    message: Schema.Attribute.Text;
-    publishedAt: Schema.Attribute.DateTime;
-    sessionType: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::session-type.session-type'
-    > &
-      Schema.Attribute.Required;
-    status: Schema.Attribute.Enumeration<
-      ['pending', 'confirmed', 'cancelled']
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'pending'>;
-    timeSlot: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::time-slot.time-slot'
-    > &
-      Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiFooterFooter extends Struct.SingleTypeSchema {
   collectionName: 'footers';
   info: {
@@ -543,7 +459,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
-    instagramUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    instagramUrl: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -551,12 +467,12 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     > &
       Schema.Attribute.Private;
     locationText: Schema.Attribute.String & Schema.Attribute.Required;
-    nolioUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    nolioUrl: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    whatsappUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    whatsappUrl: Schema.Attribute.String;
   };
 }
 
@@ -622,17 +538,15 @@ export interface ApiPageAProposPageAPropos extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    boutonPrincipal: Schema.Attribute.Component<'shared.button', false> &
-      Schema.Attribute.Required;
-    boutonSecondaire: Schema.Attribute.Component<'shared.button', false> &
-      Schema.Attribute.Required;
     certifications: Schema.Attribute.Component<'shared.certification', true> &
       Schema.Attribute.Required;
+    contenuExperience: Schema.Attribute.Blocks;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     entete: Schema.Attribute.Component<'partage.entete-page', false> &
       Schema.Attribute.Required;
+    imageExperience: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -644,19 +558,15 @@ export interface ApiPageAProposPageAPropos extends Struct.SingleTypeSchema {
       Schema.Attribute.DefaultTo<'Page \u00C0 propos'>;
     parcours: Schema.Attribute.Blocks & Schema.Attribute.Required;
     photo: Schema.Attribute.Media<'images'>;
-    principes: Schema.Attribute.Component<'page-a-propos.principe', true> &
-      Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    reseaux: Schema.Attribute.Component<'partage.reseau-social', true> &
-      Schema.Attribute.Required;
     seo: Schema.Attribute.Component<'partage.seo', false> &
       Schema.Attribute.Required;
+    surtitreExperience: Schema.Attribute.String;
+    texteAlternatifImageExperience: Schema.Attribute.String;
     texteAlternatifPhoto: Schema.Attribute.String & Schema.Attribute.Required;
-    titreAppelAction: Schema.Attribute.String & Schema.Attribute.Required;
     titreCertifications: Schema.Attribute.String & Schema.Attribute.Required;
+    titreExperience: Schema.Attribute.String;
     titreParcours: Schema.Attribute.String & Schema.Attribute.Required;
-    titrePhilosophie: Schema.Attribute.String & Schema.Attribute.Required;
-    titreReseaux: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -677,16 +587,12 @@ export interface ApiPageContactPageContact extends Struct.SingleTypeSchema {
   attributes: {
     confidentialiteFormulaire: Schema.Attribute.Text &
       Schema.Attribute.Required;
-    coordonnees: Schema.Attribute.Component<'page-contact.coordonnee', true> &
-      Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    descriptionCoordonnees: Schema.Attribute.Text & Schema.Attribute.Required;
     entete: Schema.Attribute.Component<'partage.entete-page', false> &
       Schema.Attribute.Required;
-    horaires: Schema.Attribute.Component<'page-contact.horaire', true> &
-      Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -704,8 +610,7 @@ export interface ApiPageContactPageContact extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'partage.seo', false> &
       Schema.Attribute.Required;
-    titreCoordonnees: Schema.Attribute.String & Schema.Attribute.Required;
-    titreDisponibilites: Schema.Attribute.String & Schema.Attribute.Required;
+    texteAlternatifImage: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -728,16 +633,10 @@ export interface ApiPageReservationPageReservation
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    creneaux: Schema.Attribute.Component<'partage.element-liste', true> &
-      Schema.Attribute.Required;
     entete: Schema.Attribute.Component<'partage.entete-page', false> &
       Schema.Attribute.Required;
     etapes: Schema.Attribute.Component<'partage.element-liste', true> &
       Schema.Attribute.Required;
-    joursFermes: Schema.Attribute.Component<
-      'page-reservation.jour-ferme',
-      true
-    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -748,20 +647,10 @@ export interface ApiPageReservationPageReservation
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'Page R\u00E9servation'>;
     publishedAt: Schema.Attribute.DateTime;
-    reassurances: Schema.Attribute.Component<
-      'page-reservation.reassurance',
-      true
-    > &
-      Schema.Attribute.Required;
     seo: Schema.Attribute.Component<'partage.seo', false> &
       Schema.Attribute.Required;
     texteSansPaiement: Schema.Attribute.Text & Schema.Attribute.Required;
     titreDeroulement: Schema.Attribute.String & Schema.Attribute.Required;
-    typesSeance: Schema.Attribute.Component<
-      'page-reservation.type-seance',
-      true
-    > &
-      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -847,92 +736,6 @@ export interface ApiServicesPageServicesPage extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'partage.seo', false>;
     services: Schema.Attribute.Component<'services-page.service-card', true>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiSessionTypeSessionType extends Struct.CollectionTypeSchema {
-  collectionName: 'session_types';
-  info: {
-    description: 'Types de s\u00E9ances propos\u00E9s \u00E0 la r\u00E9servation';
-    displayName: 'Type de s\u00E9ance';
-    pluralName: 'session-types';
-    singularName: 'session-type';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    bookings: Schema.Attribute.Relation<'oneToMany', 'api::booking.booking'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    duration: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          min: 1;
-        },
-        number
-      >;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::session-type.session-type'
-    > &
-      Schema.Attribute.Private;
-    mode: Schema.Attribute.Enumeration<['visio', 'pr\u00E9sentiel']> &
-      Schema.Attribute.Required;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'name'> &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    timeSlots: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::time-slot.time-slot'
-    >;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiTimeSlotTimeSlot extends Struct.CollectionTypeSchema {
-  collectionName: 'time_slots';
-  info: {
-    description: 'Cr\u00E9neaux disponibles pour les s\u00E9ances';
-    displayName: 'Cr\u00E9neau';
-    pluralName: 'time-slots';
-    singularName: 'time-slot';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    booking: Schema.Attribute.Relation<'oneToOne', 'api::booking.booking'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    date: Schema.Attribute.Date & Schema.Attribute.Required;
-    isAvailable: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<true>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::time-slot.time-slot'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    sessionType: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::session-type.session-type'
-    > &
-      Schema.Attribute.Required;
-    startTime: Schema.Attribute.Time & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1444,14 +1247,12 @@ declare module '@strapi/strapi' {
     export interface ContentTypeSchemas {
       'admin::api-token': AdminApiToken;
       'admin::api-token-permission': AdminApiTokenPermission;
-      'admin::audit-log': AdminAuditLog;
       'admin::permission': AdminPermission;
       'admin::role': AdminRole;
       'admin::session': AdminSession;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::booking.booking': ApiBookingBooking;
       'api::footer.footer': ApiFooterFooter;
       'api::homepage.homepage': ApiHomepageHomepage;
       'api::page-a-propos.page-a-propos': ApiPageAProposPageAPropos;
@@ -1459,8 +1260,6 @@ declare module '@strapi/strapi' {
       'api::page-reservation.page-reservation': ApiPageReservationPageReservation;
       'api::parametres-site.parametres-site': ApiParametresSiteParametresSite;
       'api::services-page.services-page': ApiServicesPageServicesPage;
-      'api::session-type.session-type': ApiSessionTypeSessionType;
-      'api::time-slot.time-slot': ApiTimeSlotTimeSlot;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

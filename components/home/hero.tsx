@@ -6,16 +6,19 @@ import type { HomepageHero } from '@/lib/homepage'
 
 type HeroProps = { content: HomepageHero }
 
+const pageFadeTransition = ['page-fade']
+
 export function Hero({ content }: HeroProps) {
   return (
-    <section className="relative isolate overflow-hidden">
+    <section className="relative isolate overflow-hidden bg-foreground">
       <div className="absolute inset-0 -z-10">
         <ParallaxImage
           src={content.bannerImageUrl}
           alt={content.bannerImageAlt}
           className="absolute inset-0"
           imageClassName="-scale-x-100"
-          priority
+          fetchPriority="high"
+          quality={40}
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/45 to-foreground/30" />
@@ -38,9 +41,17 @@ export function Hero({ content }: HeroProps) {
             <Button
               asChild
               size="lg"
-              className="h-12 rounded-full px-7 text-base transition-transform duration-200 hover:-translate-y-0.5"
+              className="h-12 rounded-full px-7 text-base"
             >
-              <Link href={content.primaryButtonHref}>
+              <Link
+                href={content.primaryButtonHref}
+                transitionTypes={
+                  content.primaryButtonHref.startsWith('/') &&
+                  !content.primaryButtonHref.includes('#')
+                    ? pageFadeTransition
+                    : undefined
+                }
+              >
                 {content.primaryButtonLabel}
                 <ArrowRight className="size-4" />
               </Link>
@@ -49,9 +60,17 @@ export function Hero({ content }: HeroProps) {
               asChild
               size="lg"
               variant="outline"
-              className="h-12 rounded-full border-white/40 bg-white/10 px-7 text-base text-white backdrop-blur-sm transition-transform duration-200 hover:-translate-y-0.5 hover:bg-white/20 hover:text-white"
+              className="h-12 rounded-full border-white/40 bg-white/10 px-7 text-base text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
             >
-              <Link href={content.secondaryButtonHref}>
+              <Link
+                href={content.secondaryButtonHref}
+                transitionTypes={
+                  content.secondaryButtonHref.startsWith('/') &&
+                  !content.secondaryButtonHref.includes('#')
+                    ? pageFadeTransition
+                    : undefined
+                }
+              >
                 {content.secondaryButtonLabel}
               </Link>
             </Button>

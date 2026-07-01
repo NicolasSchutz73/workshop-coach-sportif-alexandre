@@ -6,7 +6,8 @@ type ParallaxImageProps = {
   alt: string
   className?: string
   imageClassName?: string
-  priority?: boolean
+  fetchPriority?: 'high' | 'low' | 'auto'
+  quality?: number
   sizes?: string
   /** Kept for backwards compatibility; continuous scroll parallax is disabled. */
   intensity?: number
@@ -23,7 +24,8 @@ export function ParallaxImage({
   alt,
   className,
   imageClassName,
-  priority = false,
+  fetchPriority,
+  quality = 60,
   sizes = '100vw',
 }: ParallaxImageProps) {
   return (
@@ -32,7 +34,9 @@ export function ParallaxImage({
         src={src || '/placeholder.svg'}
         alt={alt}
         fill
-        priority={priority}
+        fetchPriority={fetchPriority}
+        loading={fetchPriority === 'high' ? 'eager' : undefined}
+        quality={quality}
         sizes={sizes}
         className={cn('object-cover', imageClassName)}
       />

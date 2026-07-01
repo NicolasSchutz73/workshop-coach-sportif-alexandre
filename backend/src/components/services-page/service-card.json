@@ -20,12 +20,6 @@
     "description": {
       "type": "blocks"
     },
-    "price": {
-      "type": "decimal"
-    },
-    "priceNote": {
-      "type": "string"
-    },
     "duration": {
       "type": "string"
     },
@@ -87,22 +81,6 @@
         },
         "list": {
           "label": "Description"
-        }
-      },
-      "price": {
-        "edit": {
-          "label": "Prix"
-        },
-        "list": {
-          "label": "Prix"
-        }
-      },
-      "priceNote": {
-        "edit": {
-          "label": "Précision sur le prix"
-        },
-        "list": {
-          "label": "Précision tarifaire"
         }
       },
       "duration": {

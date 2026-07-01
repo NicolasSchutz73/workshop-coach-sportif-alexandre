@@ -1,29 +1,25 @@
-import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Manrope, Geist_Mono } from 'next/font/google'
+import { AnalyticsConsent } from '@/components/analytics-consent'
+import { getSiteUrl, isProduction } from '@/lib/environment'
 import { getSiteSettings } from '@/lib/site'
 import './globals.css'
-
-const manrope = Manrope({
-  variable: '--font-manrope',
-  subsets: ['latin'],
-})
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
 
   return {
+    metadataBase: getSiteUrl(),
     title: {
       default: settings.globalSeo.title,
       template: settings.titleTemplate,
     },
     description: settings.globalSeo.description,
     keywords: settings.globalSeo.keywords,
-    generator: 'v0.app',
+    alternates: { canonical: '/' },
+    verification:
+      isProduction() && process.env.GOOGLE_SITE_VERIFICATION
+        ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+        : undefined,
     manifest: '/manifest.webmanifest',
     icons: {
       icon: [
@@ -45,23 +41,42 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
   themeColor: '#f5f4f0',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const settings = await getSiteSettings()
+
   return (
-    <html
-      lang="fr"
-      className={`${manrope.variable} ${geistMono.variable} bg-background`}
-    >
+    <html lang="fr" className="bg-background">
       <body className="font-sans antialiased">
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <AnalyticsConsent
+          measurementId={
+            isProduction()
+              ? process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+              : undefined
+          }
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': ['Person', 'ProfessionalService'],
+              name: 'Alexandre Schutz',
+              url: getSiteUrl().toString(),
+              image: new URL('/images/coach-portrait.png', getSiteUrl()).toString(),
+              description: settings.globalSeo.description,
+              areaServed: ['Chambéry', 'Aix-les-Bains', 'Savoie'],
+              knowsAbout: ['Running', 'Trail', 'Préparation marathon'],
+            }).replace(/</g, '\\u003c'),
+          }}
+        />
       </body>
     </html>
   )

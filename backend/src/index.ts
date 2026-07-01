@@ -1,355 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { mkdir, stat, writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import type { Core } from '@strapi/strapi';
-import { z } from 'zod';
-
-type McpCustomService = {
-  registerTool: (definition: {
-    name: string;
-    description: string;
-    argsSchema: Record<string, unknown>;
-    callback: (args: any) => Promise<{
-      content: Array<{ type: 'text'; text: string }>;
-    }>;
-  }) => void;
-};
-
-function mcpText(payload: unknown) {
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: JSON.stringify(payload),
-      },
-    ],
-  };
-}
-
-function resolveSchemaPath(relativePath: string) {
-  const normalized = relativePath.replace(/\\/g, '/');
-  const isAllowedRoot =
-    normalized.startsWith('src/api/') ||
-    normalized.startsWith('src/components/');
-
-  if (
-    !isAllowedRoot ||
-    normalized.includes('..') ||
-    !normalized.endsWith('.json')
-  ) {
-    throw new Error(`Chemin de schéma non autorisé: ${relativePath}`);
-  }
-
-  return path.join(process.cwd(), normalized);
-}
-
-function registerMcpWriteTools(strapi: Core.Strapi) {
-  const plugin = strapi.plugin('mcp');
-  if (!plugin) return;
-
-  const service = plugin.service('custom') as McpCustomService;
-
-  service.registerTool({
-    name: 'synchroniser-schemas-francais',
-    description:
-      'Crée ou met à jour en lot des schémas Strapi JSON sous src/api et src/components.',
-    argsSchema: {
-      fichiersJson: z.string(),
-    },
-    callback: async ({ fichiersJson }) => {
-      const files = JSON.parse(fichiersJson) as Array<{
-        chemin: string;
-        schema: unknown;
-      }>;
-
-      if (!Array.isArray(files) || files.length === 0) {
-        throw new Error('La liste de schémas est vide.');
-      }
-
-      for (const file of files) {
-        const destination = resolveSchemaPath(file.chemin);
-        await mkdir(path.dirname(destination), { recursive: true });
-        await writeFile(
-          destination,
-          `${JSON.stringify(file.schema, null, 2)}\n`,
-          'utf8',
-        );
-      }
-
-      return mcpText({
-        succes: true,
-        fichiers: files.map((file) => file.chemin),
-      });
-    },
-  });
-
-  service.registerTool({
-    name: 'importer-media-local',
-    description:
-      'Importe un fichier image local dans la médiathèque Strapi et retourne son identifiant.',
-    argsSchema: {
-      chemin: z.string(),
-      texteAlternatif: z.string(),
-    },
-    callback: async ({ chemin, texteAlternatif }) => {
-      const absolutePath = path.resolve(chemin);
-      const allowedRoot = path.resolve(process.cwd(), '..', 'alexandre-coach');
-
-      if (!absolutePath.startsWith(`${allowedRoot}${path.sep}`)) {
-        throw new Error(`Chemin de média non autorisé: ${chemin}`);
-      }
-
-      const name = path.basename(absolutePath);
-      const existing = await strapi.db
-        .query('plugin::upload.file')
-        .findOne({ where: { name } });
-
-      if (existing) {
-        if (existing.alternativeText !== texteAlternatif) {
-          await strapi.db.query('plugin::upload.file').update({
-            where: { id: existing.id },
-            data: { alternativeText: texteAlternatif },
-          });
-        }
-
-        return mcpText({
-          succes: true,
-          id: existing.id,
-          nom: existing.name,
-          url: existing.url,
-          reutilise: true,
-        });
-      }
-
-      const fileStats = await stat(absolutePath);
-      const extension = path.extname(name).toLowerCase();
-      const mimeByExtension: Record<string, string> = {
-        '.jpg': 'image/jpeg',
-        '.jpeg': 'image/jpeg',
-        '.png': 'image/png',
-        '.webp': 'image/webp',
-      };
-      const uploaded = await strapi.plugin('upload').service('upload').upload({
-        data: {
-          fileInfo: {
-            name,
-            alternativeText: texteAlternatif,
-          },
-        },
-        files: {
-          filepath: absolutePath,
-          originalFilename: name,
-          mimetype:
-            mimeByExtension[extension] ?? 'application/octet-stream',
-          size: fileStats.size,
-        },
-      });
-      const file = uploaded[0];
-
-      return mcpText({
-        succes: true,
-        id: file.id,
-        nom: file.name,
-        url: file.url,
-        reutilise: false,
-      });
-    },
-  });
-
-  service.registerTool({
-    name: 'publier-single-type',
-    description:
-      'Crée ou met à jour un Single Type Strapi puis publie sa version initiale.',
-    argsSchema: {
-      uid: z.string(),
-      donneesJson: z.string(),
-    },
-    callback: async ({ uid, donneesJson }) => {
-      if (!uid.startsWith('api::')) {
-        throw new Error(`UID non autorisé: ${uid}`);
-      }
-
-      const contentType = strapi.contentTypes[uid];
-      if (!contentType || contentType.kind !== 'singleType') {
-        throw new Error(`Single Type introuvable: ${uid}`);
-      }
-
-      const documents = strapi.documents(uid as any) as any;
-      const data = JSON.parse(donneesJson);
-      const existing = await documents.findFirst({ status: 'draft' });
-      const document = existing
-        ? await documents.update({
-            documentId: existing.documentId,
-            data,
-          })
-        : await documents.create({ data });
-
-      await documents.publish({ documentId: document.documentId });
-
-      return mcpText({
-        succes: true,
-        uid,
-        documentId: document.documentId,
-        operation: existing ? 'mise-a-jour' : 'creation',
-      });
-    },
-  });
-
-  service.registerTool({
-    name: 'initialiser-contenu-administrable',
-    description:
-      'Importe les médias locaux puis crée, met à jour et publie en lot les Single Types administrables.',
-    argsSchema: {
-      mediasJson: z.string(),
-      documentsJson: z.string(),
-    },
-    callback: async ({ mediasJson, documentsJson }) => {
-      const mediaDefinitions = JSON.parse(mediasJson) as Array<{
-        cle: string;
-        chemin: string;
-        texteAlternatif: string;
-      }>;
-      const documentDefinitions = JSON.parse(documentsJson) as Array<{
-        uid: string;
-        data: unknown;
-      }>;
-      const mediaIds: Record<string, number> = {};
-
-      for (const definition of mediaDefinitions) {
-        const absolutePath = path.resolve(definition.chemin);
-        const allowedRoot = path.resolve(
-          process.cwd(),
-          '..',
-          'alexandre-coach',
-        );
-
-        if (!absolutePath.startsWith(`${allowedRoot}${path.sep}`)) {
-          throw new Error(
-            `Chemin de média non autorisé: ${definition.chemin}`,
-          );
-        }
-
-        const name = path.basename(absolutePath);
-        const existing = await strapi.db
-          .query('plugin::upload.file')
-          .findOne({ where: { name } });
-
-        if (existing) {
-          mediaIds[definition.cle] = existing.id;
-          continue;
-        }
-
-        const fileStats = await stat(absolutePath);
-        const extension = path.extname(name).toLowerCase();
-        const mimeByExtension: Record<string, string> = {
-          '.jpg': 'image/jpeg',
-          '.jpeg': 'image/jpeg',
-          '.png': 'image/png',
-          '.webp': 'image/webp',
-        };
-        const uploaded = await strapi.plugin('upload').service('upload').upload({
-          data: {
-            fileInfo: {
-              name,
-              alternativeText: definition.texteAlternatif,
-            },
-          },
-          files: {
-            filepath: absolutePath,
-            originalFilename: name,
-            mimetype:
-              mimeByExtension[extension] ?? 'application/octet-stream',
-            size: fileStats.size,
-          },
-        });
-
-        mediaIds[definition.cle] = uploaded[0].id;
-      }
-
-      const replaceMediaReferences = (value: unknown): unknown => {
-        if (
-          typeof value === 'string' &&
-          value.startsWith('$media:')
-        ) {
-          const key = value.slice('$media:'.length);
-          const mediaId = mediaIds[key];
-
-          if (!mediaId) {
-            throw new Error(`Média introuvable pour la clé: ${key}`);
-          }
-
-          return mediaId;
-        }
-
-        if (Array.isArray(value)) {
-          return value.map(replaceMediaReferences);
-        }
-
-        if (value && typeof value === 'object') {
-          return Object.fromEntries(
-            Object.entries(value).map(([key, entry]) => [
-              key,
-              replaceMediaReferences(entry),
-            ]),
-          );
-        }
-
-        return value;
-      };
-      const results = [];
-
-      for (const definition of documentDefinitions) {
-        try {
-          const contentType = strapi.contentTypes[definition.uid];
-
-          if (!contentType || contentType.kind !== 'singleType') {
-            throw new Error(`Single Type introuvable: ${definition.uid}`);
-          }
-
-          const documents = strapi.documents(definition.uid as any) as any;
-          const existing = await documents.findFirst({ status: 'draft' });
-          const data = replaceMediaReferences(definition.data);
-          const document = existing
-            ? await documents.update({
-                documentId: existing.documentId,
-                data,
-              })
-            : await documents.create({ data });
-
-          await documents.publish({ documentId: document.documentId });
-          results.push({
-            uid: definition.uid,
-            documentId: document.documentId,
-            operation: existing ? 'mise-a-jour' : 'creation',
-          });
-        } catch (error) {
-          return mcpText({
-            succes: false,
-            medias: mediaIds,
-            documents: results,
-            erreur: {
-              uid: definition.uid,
-              nom:
-                error instanceof Error ? error.name : 'Erreur inconnue',
-              message:
-                error instanceof Error ? error.message : String(error),
-              details:
-                error && typeof error === 'object' && 'details' in error
-                  ? (error as { details?: unknown }).details
-                  : undefined,
-            },
-          });
-        }
-      }
-
-      return mcpText({
-        succes: true,
-        medias: mediaIds,
-        documents: results,
-      });
-    },
-  });
-}
 
 const frenchLabels = {
   'api::homepage.homepage': {
@@ -402,25 +52,20 @@ const frenchLabels = {
     texteAlternatifPhoto: 'Texte alternatif de la photo',
     titreParcours: 'Titre du parcours',
     parcours: 'Parcours',
+    surtitreExperience: "Surtitre de l'expérience",
+    titreExperience: "Titre de l'expérience",
+    contenuExperience: "Texte de l'expérience",
+    imageExperience: "Image de l'expérience",
+    texteAlternatifImageExperience: "Texte alternatif de l'image",
     titreCertifications: 'Titre des certifications',
     certifications: 'Certifications',
-    titreReseaux: 'Titre des réseaux sociaux',
-    reseaux: 'Réseaux sociaux',
-    titrePhilosophie: 'Titre de la philosophie',
-    principes: 'Principes de coaching',
-    titreAppelAction: "Titre de l'appel à l'action",
-    boutonPrincipal: 'Bouton principal',
-    boutonSecondaire: 'Bouton secondaire',
   },
   'api::page-contact.page-contact': {
     nomInterne: 'Nom de la page',
     seo: 'Référencement',
     entete: 'En-tête',
-    titreCoordonnees: 'Titre des coordonnées',
-    descriptionCoordonnees: 'Description des coordonnées',
-    coordonnees: 'Coordonnées',
-    titreDisponibilites: 'Titre des disponibilités',
-    horaires: 'Horaires',
+    image: 'Image de la page',
+    texteAlternatifImage: "Texte alternatif de l'image",
     objectifsFormulaire: 'Objectifs proposés dans le formulaire',
     confidentialiteFormulaire: 'Message de confidentialité',
   },
@@ -430,10 +75,6 @@ const frenchLabels = {
     entete: 'En-tête',
     titreDeroulement: 'Titre du déroulement',
     etapes: 'Étapes',
-    reassurances: 'Éléments de réassurance',
-    typesSeance: 'Types de séance',
-    creneaux: 'Créneaux disponibles',
-    joursFermes: 'Jours fermés',
     texteSansPaiement: 'Message sur le paiement',
   },
   'shared.feature': {
@@ -489,8 +130,6 @@ const frenchLabels = {
     slug: 'Identifiant technique',
     tagline: 'Accroche',
     description: 'Description',
-    price: 'Prix',
-    priceNote: 'Précision sur le prix',
     duration: 'Durée',
     featured: 'Mettre en avant',
     featuredLabel: 'Libellé de mise en avant',
@@ -502,7 +141,6 @@ const frenchLabels = {
     title: 'Nom du plan',
     slug: 'Produit LemonSqueezy',
     detail: 'Durée et niveau',
-    price: 'Prix',
     button: "Bouton d'achat",
     longDescription: 'Description longue',
     cover: 'Image de couverture',
@@ -510,7 +148,6 @@ const frenchLabels = {
     contentsPreview: 'Image d’aperçu du sommaire',
     contentsPreviewAlt: 'Texte alternatif de l’aperçu',
     tableOfContents: 'Sommaire',
-    receives: 'Vous allez recevoir',
   },
   'services-page.plan-list-item': {
     title: 'Libellé',
@@ -549,11 +186,6 @@ const frenchLabels = {
   'partage.element-liste': {
     texte: 'Texte',
   },
-  'partage.reseau-social': {
-    plateforme: 'Plateforme',
-    libelle: 'Libellé accessible',
-    lien: 'Lien',
-  },
   'page-accueil.introduction-section': {
     surtitre: 'Surtitre',
     titre: 'Titre',
@@ -565,35 +197,6 @@ const frenchLabels = {
     nom: 'Nom affiché',
     detail: 'Résultat ou contexte',
     note: 'Note sur 5',
-  },
-  'page-a-propos.principe': {
-    titre: 'Titre',
-    description: 'Description',
-  },
-  'page-contact.coordonnee': {
-    type: 'Type',
-    libelle: 'Libellé',
-    valeur: 'Valeur affichée',
-    lien: 'Lien',
-  },
-  'page-contact.horaire': {
-    jours: 'Jours',
-    heures: 'Heures',
-  },
-  'page-reservation.type-seance': {
-    identifiant: 'Identifiant technique',
-    libelle: 'Libellé',
-    duree: 'Durée',
-    mode: 'Mode',
-    icone: 'Icône',
-  },
-  'page-reservation.reassurance': {
-    icone: 'Icône',
-    titre: 'Titre',
-    texte: 'Texte',
-  },
-  'page-reservation.jour-ferme': {
-    jour: 'Jour',
   },
 } as const;
 
@@ -632,7 +235,9 @@ async function ensureFrenchContentManagerLabels(strapi: Core.Strapi) {
   const contentManager = strapi.plugin('content-manager');
 
   for (const [uid, labels] of Object.entries(frenchLabels)) {
-    const isComponent = Boolean(strapi.components[uid]);
+    const isComponent = Boolean(
+      (strapi.components as unknown as Record<string, unknown>)[uid],
+    );
     const serviceName = isComponent ? 'components' : 'content-types';
     const service = contentManager.service(
       serviceName,
@@ -732,8 +337,6 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
               ],
             },
           ],
-          price: 55,
-          priceNote: '/ séance',
           featured: false,
           features: [
             { name: 'Séance individuelle d’1h' },
@@ -741,7 +344,7 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
             { name: 'Travail technique sur le terrain' },
             { name: 'Conseils nutrition & récupération' },
           ],
-          button: { label: 'Réserver une séance', href: '/booking' },
+          button: { label: 'Réserver une séance', href: '/reservation' },
         },
         {
           title: 'Coaching mensuel',
@@ -758,8 +361,6 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
               ],
             },
           ],
-          price: 120,
-          priceNote: '/ mois',
           featured: true,
           features: [
             { name: 'Plan d’entraînement personnalisé' },
@@ -768,7 +369,7 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
             { name: 'Bilan mensuel de progression' },
             { name: 'Accès à l’app Nolio' },
           ],
-          button: { label: 'Commencer maintenant', href: '/booking' },
+          button: { label: 'Commencer maintenant', href: '/reservation' },
         },
         {
           title: 'Coaching en ligne',
@@ -785,8 +386,6 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
               ],
             },
           ],
-          price: 89,
-          priceNote: '/ mois',
           featured: false,
           features: [
             { name: 'Plan d’entraînement mensuel' },
@@ -794,7 +393,7 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
             { name: 'Point visio bimensuel' },
             { name: 'Réponses sous 24h' },
           ],
-          button: { label: 'Démarrer en ligne', href: '/booking' },
+          button: { label: 'Démarrer en ligne', href: '/reservation' },
         },
         {
           title: 'E-books & plans',
@@ -811,8 +410,6 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
               ],
             },
           ],
-          price: 19,
-          priceNote: '/ plan',
           featured: false,
           features: [
             { name: 'Plans 10 km, semi & marathon' },
@@ -820,7 +417,7 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
             { name: 'Conseils nutrition inclus' },
             { name: 'Téléchargement immédiat' },
           ],
-          button: { label: 'Voir les plans', href: '/services' },
+          button: { label: 'Voir les plans', href: '/services#ebooks' },
         },
       ],
       plansSection: {
@@ -835,28 +432,24 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
             slug: 'plan-10-km',
             title: 'Plan 10 km',
             detail: '8 semaines · débutant à intermédiaire',
-            price: 19,
             button: { label: 'Acheter', href: '/plans/plan-10-km' },
           },
           {
             slug: 'plan-semi-marathon',
             title: 'Plan Semi-marathon',
             detail: '10 semaines · objectif chrono',
-            price: 24,
             button: { label: 'Acheter', href: '/plans/plan-semi-marathon' },
           },
           {
             slug: 'plan-marathon',
             title: 'Plan Marathon',
             detail: '12 semaines · structuré & progressif',
-            price: 29,
             button: { label: 'Acheter', href: '/plans/plan-marathon' },
           },
           {
             slug: 'plan-trail-decouverte',
             title: 'Plan Trail découverte',
             detail: '8 semaines · gestion du dénivelé',
-            price: 24,
             button: { label: 'Acheter', href: '/plans/plan-trail-decouverte' },
           },
         ],
@@ -867,7 +460,7 @@ async function ensureServicesPageContent(strapi: Core.Strapi) {
           'Réservez un premier échange gratuit. On choisit ensemble la meilleure approche pour vos objectifs.',
         button: {
           label: 'Réserver un échange gratuit',
-          href: '/booking',
+          href: '/reservation',
         },
       },
     },
@@ -887,100 +480,13 @@ async function ensureFooterContent(strapi: Core.Strapi) {
       brandName: 'Alexandre Schutz',
       description:
         'Coach running & trail indépendant. Chambéry, Aix-les-Bains, Lac du Bourget et massifs de Savoie.',
-      instagramUrl: 'https://instagram.com',
-      whatsappUrl: 'https://wa.me/33600000000',
-      nolioUrl: 'https://nolio.io',
+      nolioUrl: 'https://www.nolio.io/coach/alexandre.schutz.63155/',
       copyrightText: 'Alexandre Schutz Coaching. Tous droits réservés.',
       locationText: 'Chambéry · Savoie · France',
     },
   });
 
   await documents.publish({ documentId: created.documentId });
-}
-
-const initialSessionTypes = [
-  {
-    name: 'Échange découverte',
-    duration: 30,
-    mode: 'visio',
-    slug: 'discovery',
-    times: ['12:00', '18:30'],
-  },
-  {
-    name: 'Séance coaching',
-    duration: 60,
-    mode: 'présentiel',
-    slug: 'session',
-    times: ['07:00', '08:30', '17:30'],
-  },
-  {
-    name: 'Point coaching en ligne',
-    duration: 45,
-    mode: 'visio',
-    slug: 'online',
-    times: ['10:00', '19:30'],
-  },
-] as const;
-
-async function ensureInitialBookingData(strapi: Core.Strapi) {
-  const existingSessionType = await strapi.db
-    .query('api::session-type.session-type' as any)
-    .findOne({ select: ['id'] });
-  const existingTimeSlot = await strapi.db
-    .query('api::time-slot.time-slot' as any)
-    .findOne({ select: ['id'] });
-
-  // Seed only a completely empty installation. Later availability stays
-  // entirely under the administrator's control.
-  if (existingSessionType || existingTimeSlot) return;
-
-  const sessionTypeDocuments = strapi.documents(
-    'api::session-type.session-type' as any,
-  ) as any;
-  const timeSlotDocuments = strapi.documents(
-    'api::time-slot.time-slot' as any,
-  ) as any;
-  const createdSessionTypes = [];
-
-  for (const definition of initialSessionTypes) {
-    const sessionType = await sessionTypeDocuments.create({
-      data: {
-        name: definition.name,
-        duration: definition.duration,
-        mode: definition.mode,
-        slug: definition.slug,
-      },
-    });
-
-    createdSessionTypes.push({
-      documentId: sessionType.documentId,
-      times: definition.times,
-    });
-  }
-
-  const start = new Date();
-  start.setUTCHours(12, 0, 0, 0);
-
-  for (let dayOffset = 1; dayOffset <= 45; dayOffset += 1) {
-    const date = new Date(start);
-    date.setUTCDate(start.getUTCDate() + dayOffset);
-
-    if (date.getUTCDay() === 0) continue;
-    const dateKey = date.toISOString().slice(0, 10);
-
-    for (const sessionType of createdSessionTypes) {
-      for (const time of sessionType.times) {
-        await timeSlotDocuments.create({
-          data: {
-            date: dateKey,
-            startTime: `${time}:00.000`,
-            isAvailable: true,
-            sessionType: sessionType.documentId,
-          },
-        });
-      }
-    }
-  }
 }
 
 async function ensureRolePermissions(
@@ -1030,7 +536,7 @@ async function ensureRolePermissions(
   }
 }
 
-async function ensureBookingPermissions(strapi: Core.Strapi) {
+async function ensurePublicContentPermissions(strapi: Core.Strapi) {
   await ensureRolePermissions(
     strapi,
     'public',
@@ -1042,32 +548,8 @@ async function ensureBookingPermissions(strapi: Core.Strapi) {
       'api::page-a-propos.page-a-propos.find',
       'api::page-contact.page-contact.find',
       'api::page-reservation.page-reservation.find',
-      'api::session-type.session-type.find',
-      'api::session-type.session-type.findOne',
-      'api::time-slot.time-slot.find',
-      'api::time-slot.time-slot.findOne',
-      'api::booking.booking.create',
     ],
     100,
-  );
-
-  const fullAccessActions = ['find', 'findOne', 'create', 'update', 'delete'];
-  const authenticatedActions = [
-    ...fullAccessActions.map(
-      (action) => `api::session-type.session-type.${action}`,
-    ),
-    ...fullAccessActions.map(
-      (action) => `api::time-slot.time-slot.${action}`,
-    ),
-    ...fullAccessActions.map((action) => `api::booking.booking.${action}`),
-    'api::time-slot.time-slot.generate',
-  ];
-
-  await ensureRolePermissions(
-    strapi,
-    'authenticated',
-    authenticatedActions,
-    200,
   );
 }
 
@@ -1088,12 +570,10 @@ export default {
   * run jobs, or perform some special logic.
   */
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
-    registerMcpWriteTools(strapi);
     await ensureFrenchContentManagerLabels(strapi);
     await ensureHomepageInternalName(strapi);
     await ensureServicesPageContent(strapi);
     await ensureFooterContent(strapi);
-    await ensureInitialBookingData(strapi);
-    await ensureBookingPermissions(strapi);
+    await ensurePublicContentPermissions(strapi);
   },
 };

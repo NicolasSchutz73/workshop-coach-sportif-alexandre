@@ -29,29 +29,15 @@
       "component": "partage.entete-page",
       "required": true
     },
-    "titreCoordonnees": {
-      "type": "string",
-      "required": true
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "descriptionCoordonnees": {
-      "type": "text",
-      "required": true
-    },
-    "coordonnees": {
-      "type": "component",
-      "repeatable": true,
-      "component": "page-contact.coordonnee",
-      "required": true
-    },
-    "titreDisponibilites": {
-      "type": "string",
-      "required": true
-    },
-    "horaires": {
-      "type": "component",
-      "repeatable": true,
-      "component": "page-contact.horaire",
-      "required": true
+    "texteAlternatifImage": {
+      "type": "string"
     },
     "objectifsFormulaire": {
       "type": "component",

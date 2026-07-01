@@ -9,6 +9,8 @@ type AboutPreviewProps = {
   content: AboutPreviewContent
 }
 
+const pageFadeTransition = ['page-fade']
+
 export function AboutPreview({ content }: AboutPreviewProps) {
   return (
     <section className="border-y border-border/60 bg-card">
@@ -16,7 +18,7 @@ export function AboutPreview({ content }: AboutPreviewProps) {
         <ParallaxImage
           src={content.imageUrl}
           alt={content.imageAlt}
-          className="relative aspect-[4/5] rounded-3xl"
+          className="relative aspect-[4/5] rounded-2xl"
           sizes="(min-width: 1024px) 50vw, 100vw"
           reveal
         />
@@ -25,7 +27,7 @@ export function AboutPreview({ content }: AboutPreviewProps) {
           <p className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
             {content.eyebrow}
           </p>
-          <h2 className="text-balance font-heading text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-balance font-heading text-3xl font-extrabold leading-[1.04] tracking-tight sm:text-4xl">
             {content.title}
           </h2>
           <p className="mt-5 text-pretty leading-relaxed text-muted-foreground">
@@ -41,8 +43,15 @@ export function AboutPreview({ content }: AboutPreviewProps) {
             ))}
           </ul>
 
-          <Button asChild className="mt-8 rounded-full transition-transform duration-200 hover:-translate-y-0.5">
-            <Link href={content.ctaHref}>
+          <Button asChild className="mt-8 rounded-full">
+            <Link
+              href={content.ctaHref}
+              transitionTypes={
+                content.ctaHref.startsWith('/') && !content.ctaHref.includes('#')
+                  ? pageFadeTransition
+                  : undefined
+              }
+            >
               {content.ctaLabel}
               <ArrowRight className="size-4" />
             </Link>

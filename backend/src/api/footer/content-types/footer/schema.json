@@ -81,16 +81,13 @@
       "required": true
     },
     "instagramUrl": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "whatsappUrl": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "nolioUrl": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "copyrightText": {
       "type": "string",

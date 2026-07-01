@@ -14,6 +14,14 @@ type SiteHeaderClientProps = {
   bookingButton: ButtonContent
 }
 
+const pageFadeTransition = ['page-fade']
+
+function getTransitionTypes(href: string) {
+  return href.startsWith('/') && !href.includes('#')
+    ? pageFadeTransition
+    : undefined
+}
+
 export function SiteHeaderClient({
   brandName,
   navigation,
@@ -23,14 +31,18 @@ export function SiteHeaderClient({
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm">
+    <header
+      className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm"
+      style={{ viewTransitionName: 'site-header' }}
+    >
       <div className="mx-auto flex h-[4.5rem] w-full max-w-7xl items-center justify-between px-5 sm:px-8">
         <Link
           href="/"
+          transitionTypes={pageFadeTransition}
           className="flex items-center gap-2"
           onClick={() => setOpen(false)}
         >
-          <span className="font-heading text-sm font-semibold tracking-[-0.04em] sm:text-base">
+          <span className="font-heading text-sm font-semibold tracking-tight sm:text-base">
             {brandName}
           </span>
         </Link>
@@ -43,6 +55,7 @@ export function SiteHeaderClient({
             <Link
               key={`${link.href}-${link.label}`}
               href={link.href}
+              transitionTypes={getTransitionTypes(link.href)}
               className={cn(
                 'border-b border-transparent py-1 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground hover:text-foreground',
                 pathname === link.href && 'border-foreground text-foreground',
@@ -56,9 +69,12 @@ export function SiteHeaderClient({
         <div className="hidden md:block">
           <Button
             asChild
-            className="h-10 px-5 text-sm"
+            className="h-10 rounded-full px-5 text-sm"
           >
-            <Link href={bookingButton.href}>
+            <Link
+              href={bookingButton.href}
+              transitionTypes={getTransitionTypes(bookingButton.href)}
+            >
               {bookingButton.label}
             </Link>
           </Button>
@@ -85,6 +101,7 @@ export function SiteHeaderClient({
               <Link
                 key={`${link.href}-${link.label}`}
                 href={link.href}
+                transitionTypes={getTransitionTypes(link.href)}
                 onClick={() => setOpen(false)}
                 className={cn(
                   'border-b border-border px-0 py-3 text-base font-medium text-muted-foreground transition-colors hover:text-foreground',
@@ -94,9 +111,10 @@ export function SiteHeaderClient({
                 {link.label}
               </Link>
             ))}
-            <Button asChild className="mt-5 h-12 text-base">
+            <Button asChild className="mt-5 h-12 rounded-full text-base">
               <Link
                 href={bookingButton.href}
+                transitionTypes={getTransitionTypes(bookingButton.href)}
                 onClick={() => setOpen(false)}
               >
                 {bookingButton.label}

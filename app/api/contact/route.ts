@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import { z } from 'zod'
+import { hasOversizedBody, isRateLimited, rateLimitResponse } from '@/lib/request-security'
 
 export const runtime = 'nodejs'
 
@@ -15,7 +16,9 @@ const contactRequestSchema = z
       .refine((value) => value.length === 0 || value.length >= 6)
       .optional(),
     message: z.string().trim().min(1).max(3000),
+    objective: z.string().trim().min(2).max(120),
     contactVerification: z.string().max(0),
+    formStartedAt: z.number().int().positive(),
   })
   .strict()
 
@@ -56,6 +59,22 @@ function getRequiredEnvironment() {
 }
 
 export async function POST(request: Request) {
+  if (hasOversizedBody(request) || isRateLimited(request, 'contact', 5, 10 * 60_000)) {
+    return hasOversizedBody(request)
+      ? Response.json({ error: 'La requête est trop volumineuse.' }, { status: 413 })
+      : rateLimitResponse()
+  }
+
+  const body = await request.json().catch(() => null)
+  const parsed = contactRequestSchema.safeParse(body)
+
+  if (!parsed.success || Date.now() - parsed.data.formStartedAt < 1_500) {
+    return Response.json(
+      { error: 'Les informations de contact sont invalides.' },
+      { status: 400 },
+    )
+  }
+
   let environment: ReturnType<typeof getRequiredEnvironment>
 
   try {
@@ -68,22 +87,13 @@ export async function POST(request: Request) {
     )
   }
 
-  const body = await request.json().catch(() => null)
-  const parsed = contactRequestSchema.safeParse(body)
-
-  if (!parsed.success) {
-    return Response.json(
-      { error: 'Les informations de contact sont invalides.' },
-      { status: 400 },
-    )
-  }
-
-  const { firstName, lastName, email, phone, message } = parsed.data
+  const { firstName, lastName, email, phone, message, objective } = parsed.data
   const text = [
     `Prénom : ${firstName}`,
     `Nom : ${lastName}`,
     `Email : ${email}`,
     phone ? `Téléphone : ${phone}` : null,
+    `Besoin : ${objective}`,
     '',
     message,
   ]

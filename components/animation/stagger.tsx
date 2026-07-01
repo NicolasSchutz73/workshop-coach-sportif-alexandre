@@ -1,8 +1,4 @@
-'use client'
-
-import { motion, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
-import { fadeIn, fadeUp, staggerContainer, viewportOnce } from '@/lib/animations'
 
 type Element = 'div' | 'ul' | 'ol' | 'section'
 
@@ -21,19 +17,9 @@ export function StaggerGroup({
   className,
   as = 'div',
 }: StaggerGroupProps) {
-  const MotionTag = motion[as]
+  const Tag = as
 
-  return (
-    <MotionTag
-      className={className}
-      variants={staggerContainer}
-      initial="hidden"
-      whileInView="visible"
-      viewport={viewportOnce}
-    >
-      {children}
-    </MotionTag>
-  )
+  return <Tag className={className}>{children}</Tag>
 }
 
 type StaggerItemProps = {
@@ -47,12 +33,7 @@ export function StaggerItem({
   className,
   as = 'div',
 }: StaggerItemProps) {
-  const reduceMotion = useReducedMotion()
-  const MotionTag = motion[as]
+  const Tag = as
 
-  return (
-    <MotionTag className={className} variants={reduceMotion ? fadeIn : fadeUp}>
-      {children}
-    </MotionTag>
-  )
+  return <Tag className={className}>{children}</Tag>
 }

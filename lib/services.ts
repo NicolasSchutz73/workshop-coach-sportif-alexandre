@@ -13,6 +13,32 @@ import { isEbookSlug, type EbookSlug } from '@/lib/ebooks'
 import { normalizeInternalHref, reservationPath } from '@/lib/routes'
 
 const nolioCoachProfileUrl = 'https://www.nolio.io/coach/alexandre.schutz.63155/'
+const plansSectionHref = '/services#ebooks'
+const planPrice = '19€'
+
+const commercialDetailsBySlug: Record<
+  string,
+  Pick<Service, 'price' | 'priceNote' | 'cta' | 'ctaHref'>
+> = {
+  'coaching-mensuel': {
+    price: 'À définir',
+    priceNote: 'avec le coach',
+    cta: 'Voir le coaching sur Nolio',
+    ctaHref: nolioCoachProfileUrl,
+  },
+  'coaching-1to1': {
+    price: 'À définir',
+    priceNote: 'avec le coach',
+    cta: 'Réserver une séance',
+    ctaHref: reservationPath,
+  },
+  'ebooks-plans': {
+    price: planPrice,
+    priceNote: '/ plan',
+    cta: 'Voir les plans',
+    ctaHref: plansSectionHref,
+  },
+}
 
 export type Service = {
   slug: string
@@ -45,8 +71,8 @@ export const fallbackServices: Service[] = [
     icon: CalendarDays,
     name: 'Coaching mensuel',
     tagline: 'Suivi complet',
-    price: 'Sur devis',
-    priceNote: 'après échange',
+    price: 'À définir',
+    priceNote: 'avec le coach',
     description:
       'L’accompagnement le plus complet pour progresser durablement, avec un plan adapté, des séances terrain et un suivi régulier.',
     features: [
@@ -58,7 +84,7 @@ export const fallbackServices: Service[] = [
     ],
     featured: true,
     featuredLabel: 'Accompagnement complet',
-    cta: 'Démarrer avec Nolio',
+    cta: 'Voir le coaching sur Nolio',
     ctaHref: nolioCoachProfileUrl,
   },
   {
@@ -67,7 +93,7 @@ export const fallbackServices: Service[] = [
     name: 'Séance 1-to-1',
     tagline: 'Séance ponctuelle',
     price: 'À définir',
-    priceNote: 'selon format',
+    priceNote: 'avec le coach',
     description:
       'Une séance individuelle pour travailler un point précis : technique, reprise, préparation d’une course ou remise en route.',
     features: [
@@ -84,7 +110,7 @@ export const fallbackServices: Service[] = [
     icon: BookOpen,
     name: 'E-books & plans',
     tagline: 'Autonomie',
-    price: 'Dès 19€',
+    price: planPrice,
     priceNote: '/ plan',
     description:
       'Des plans PDF prêts à suivre pour progresser en autonomie sur 10 km, semi, marathon ou trail découverte.',
@@ -94,8 +120,8 @@ export const fallbackServices: Service[] = [
       'Conseils d’allure et de récupération',
       'Paiement sécurisé et envoi par e-mail',
     ],
-    cta: 'Voir les e-books',
-    ctaHref: '#ebooks',
+    cta: 'Voir les plans',
+    ctaHref: plansSectionHref,
   },
 ]
 
@@ -120,7 +146,6 @@ export type TrainingPlan = {
     alt: string
   }
   tableOfContents: string[]
-  receives: string[]
 }
 
 export type ServicesPageContent = {
@@ -178,7 +203,7 @@ export const fallbackServicesPageContent: ServicesPageContent = {
         slug: 'plan-10-km',
         title: 'Plan 10 km',
         detail: '8 semaines · débutant à intermédiaire',
-        price: '19€',
+        price: planPrice,
         button: { label: 'Acheter', href: '/plans/plan-10-km' },
         longDescription:
           'Un cadre simple et progressif pour préparer votre premier 10 km ou retrouver de la régularité. Chaque semaine équilibre endurance, séances rythmées et récupération.',
@@ -196,18 +221,12 @@ export const fallbackServicesPageContent: ServicesPageContent = {
           'Allures et séances clés',
           'Conseils pour la semaine de course',
         ],
-        receives: [
-          'Un plan progressif sur 8 semaines',
-          'Les allures expliquées simplement',
-          'Des repères pour récupérer et rester régulier',
-          'Un PDF clair, prêt à suivre',
-        ],
       },
       {
         slug: 'plan-semi-marathon',
         title: 'Plan Semi-marathon',
         detail: '10 semaines · objectif chrono',
-        price: '24€',
+        price: planPrice,
         button: { label: 'Acheter', href: '/plans/plan-semi-marathon' },
         longDescription:
           'Dix semaines pour construire une endurance solide, mieux gérer votre allure et arriver sur la ligne de départ avec une préparation cohérente.',
@@ -225,18 +244,12 @@ export const fallbackServicesPageContent: ServicesPageContent = {
           'Séances à allure spécifique',
           'Stratégie de course et ravitaillement',
         ],
-        receives: [
-          'Un plan structuré sur 10 semaines',
-          'Des séances ciblées pour votre objectif',
-          'Des conseils d’allure et de ravitaillement',
-          'Un PDF clair, prêt à suivre',
-        ],
       },
       {
         slug: 'plan-marathon',
         title: 'Plan Marathon',
         detail: '12 semaines · structuré & progressif',
-        price: '29€',
+        price: planPrice,
         button: { label: 'Acheter', href: '/plans/plan-marathon' },
         longDescription:
           'Une préparation progressive pour construire l’endurance nécessaire au marathon, répartir votre charge et aborder les longues sorties avec méthode.',
@@ -254,18 +267,12 @@ export const fallbackServicesPageContent: ServicesPageContent = {
           'Longues sorties et semaines allégées',
           'La stratégie du jour J',
         ],
-        receives: [
-          'Un plan progressif sur 12 semaines',
-          'Une structure claire pour les longues sorties',
-          'Des repères pour gérer la charge et la récupération',
-          'Un PDF clair, prêt à suivre',
-        ],
       },
       {
         slug: 'plan-trail-decouverte',
         title: 'Plan Trail découverte',
         detail: '8 semaines · gestion du dénivelé',
-        price: '24€',
+        price: planPrice,
         button: { label: 'Acheter', href: '/plans/plan-trail-decouverte' },
         longDescription:
           'Un premier cycle trail pour apprivoiser les montées, les descentes et le dénivelé sans brûler les étapes. Pensé pour prendre confiance sur les sentiers.',
@@ -282,12 +289,6 @@ export const fallbackServicesPageContent: ServicesPageContent = {
           'Les 8 semaines de préparation',
           'Gérer montées et descentes',
           'Préparer votre première sortie trail',
-        ],
-        receives: [
-          'Un plan trail progressif sur 8 semaines',
-          'Des repères pour le dénivelé',
-          'Des conseils pour courir en montée et en descente',
-          'Un PDF clair, prêt à suivre',
         ],
       },
     ],
@@ -340,8 +341,6 @@ type StrapiService = {
   slug?: string | null
   tagline?: string | null
   description?: StrapiBlocksDescription | string | null
-  price?: number | string | null
-  priceNote?: string | null
   duration?: string | null
   featured?: boolean | null
   featuredLabel?: string | null
@@ -360,7 +359,6 @@ type StrapiPlan = {
   slug?: string | null
   title?: string | null
   detail?: string | null
-  price?: number | string | null
   button?: StrapiButton | null
   longDescription?: StrapiBlocksDescription | string | null
   cover?: StrapiMedia | null
@@ -368,7 +366,6 @@ type StrapiPlan = {
   contentsPreview?: StrapiMedia | null
   contentsPreviewAlt?: string | null
   tableOfContents?: StrapiPlanItem[] | null
-  receives?: StrapiPlanItem[] | null
 }
 
 type StrapiPlanItem = {
@@ -442,17 +439,6 @@ function textFromBlocks(description: StrapiService['description']) {
     .join('\n\n')
 }
 
-function formatPrice(price: StrapiService['price']) {
-  if (price === null || price === undefined || price === '') return ''
-
-  const numericPrice = typeof price === 'number' ? price : Number(price)
-  if (!Number.isFinite(numericPrice)) return String(price)
-
-  return `${new Intl.NumberFormat('fr-FR', {
-    maximumFractionDigits: Number.isInteger(numericPrice) ? 0 : 2,
-  }).format(numericPrice)}€`
-}
-
 function normalizeImage(image?: StrapiMedia | null) {
   const data = image?.attributes ?? image
   const url = getStrapiMediaUrl(data?.url)
@@ -475,10 +461,11 @@ function normalizeButton(
   }
 }
 
-function toService(entry: StrapiEntity<StrapiService>, index: number): Service {
+export function toService(entry: StrapiEntity<StrapiService>, index: number): Service {
   const data = normalizeEntity(entry)
   const slug = data.slug ?? `service-${entry.documentId ?? entry.id ?? index}`
   const fallback = getFallbackBySlug(slug) ?? fallbackServices[index]
+  const commercialDetails = commercialDetailsBySlug[slug]
   const features =
     data.features
       ?.map((feature) => feature.name ?? feature.description)
@@ -489,20 +476,20 @@ function toService(entry: StrapiEntity<StrapiService>, index: number): Service {
     icon: iconBySlug[slug] ?? fallback?.icon ?? User,
     name: data.title ?? fallback?.name ?? 'Service',
     tagline: data.tagline ?? fallback?.tagline ?? '',
-    price: formatPrice(data.price) || fallback?.price || '',
-    priceNote: data.priceNote ?? fallback?.priceNote ?? '',
+    price: commercialDetails?.price ?? fallback?.price ?? '',
+    priceNote: commercialDetails?.priceNote ?? fallback?.priceNote ?? '',
     description: textFromBlocks(data.description) || fallback?.description || '',
     features: features.length > 0 ? features : fallback?.features ?? [],
     featured: data.featured ?? fallback?.featured,
     featuredLabel:
       data.featuredLabel?.trim() || fallback?.featuredLabel,
-    cta: data.button?.label ?? fallback?.cta ?? 'Réserver',
-    ctaHref:
-      slug === 'coaching-mensuel'
-        ? nolioCoachProfileUrl
-        : normalizeInternalHref(
-            data.button?.href ?? fallback?.ctaHref ?? reservationPath,
-          ),
+    cta: commercialDetails?.cta ?? data.button?.label ?? fallback?.cta ?? 'Réserver',
+    ctaHref: normalizeInternalHref(
+      commercialDetails?.ctaHref ??
+        data.button?.href ??
+        fallback?.ctaHref ??
+        reservationPath,
+    ),
     image: normalizeImage(data.image),
   }
 }
@@ -541,7 +528,7 @@ export async function getServicesPageContent(): Promise<ServicesPageContent> {
     const response = await strapiFetch<
       StrapiSingleResponse<StrapiServicesPage>
     >(
-      '/services-page?populate[seo]=true&populate[header]=true&populate[plansSection][populate][plans][populate][button]=true&populate[plansSection][populate][plans][populate][cover]=true&populate[plansSection][populate][plans][populate][contentsPreview]=true&populate[plansSection][populate][plans][populate][tableOfContents]=true&populate[plansSection][populate][plans][populate][receives]=true&populate[plansSection][populate][image]=true&populate[finalCta][populate][button]=true',
+      '/services-page?populate[seo]=true&populate[header]=true&populate[plansSection][populate][plans][populate][button]=true&populate[plansSection][populate][plans][populate][cover]=true&populate[plansSection][populate][plans][populate][contentsPreview]=true&populate[plansSection][populate][plans][populate][tableOfContents]=true&populate[plansSection][populate][image]=true&populate[finalCta][populate][button]=true',
       {
         next: {
           revalidate: Number(process.env.STRAPI_REVALIDATE_SECONDS ?? 60),
@@ -571,16 +558,11 @@ export async function getServicesPageContent(): Promise<ServicesPageContent> {
           plan.tableOfContents
             ?.map((item) => item.title?.trim())
             .filter((item): item is string => Boolean(item)) ?? []
-        const receives =
-          plan.receives
-            ?.map((item) => item.title?.trim())
-            .filter((item): item is string => Boolean(item)) ?? []
-
         return {
           slug: isEbookSlug(plan.slug) ? plan.slug : fallbackPlan.slug,
           title: plan.title ?? fallbackPlan.title,
           detail: plan.detail ?? fallbackPlan.detail,
-          price: formatPrice(plan.price) || fallbackPlan.price,
+          price: planPrice,
           button: normalizeButton(plan.button, fallbackPlan.button),
           longDescription:
             textFromBlocks(plan.longDescription) || fallbackPlan.longDescription,
@@ -599,7 +581,6 @@ export async function getServicesPageContent(): Promise<ServicesPageContent> {
             tableOfContents.length > 0
               ? tableOfContents
               : fallbackPlan.tableOfContents,
-          receives: receives.length > 0 ? receives : fallbackPlan.receives,
         }
       }) ?? fallback.plansSection.plans
     const image = normalizeImage(plansSection?.image)

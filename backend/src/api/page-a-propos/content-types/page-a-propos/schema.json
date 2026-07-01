@@ -48,6 +48,25 @@
       "type": "blocks",
       "required": true
     },
+    "surtitreExperience": {
+      "type": "string"
+    },
+    "titreExperience": {
+      "type": "string"
+    },
+    "contenuExperience": {
+      "type": "blocks"
+    },
+    "imageExperience": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "texteAlternatifImageExperience": {
+      "type": "string"
+    },
     "titreCertifications": {
       "type": "string",
       "required": true
@@ -56,42 +75,6 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.certification",
-      "required": true
-    },
-    "titreReseaux": {
-      "type": "string",
-      "required": true
-    },
-    "reseaux": {
-      "type": "component",
-      "repeatable": true,
-      "component": "partage.reseau-social",
-      "required": true
-    },
-    "titrePhilosophie": {
-      "type": "string",
-      "required": true
-    },
-    "principes": {
-      "type": "component",
-      "repeatable": true,
-      "component": "page-a-propos.principe",
-      "required": true
-    },
-    "titreAppelAction": {
-      "type": "string",
-      "required": true
-    },
-    "boutonPrincipal": {
-      "type": "component",
-      "repeatable": false,
-      "component": "shared.button",
-      "required": true
-    },
-    "boutonSecondaire": {
-      "type": "component",
-      "repeatable": false,
-      "component": "shared.button",
       "required": true
     }
   }

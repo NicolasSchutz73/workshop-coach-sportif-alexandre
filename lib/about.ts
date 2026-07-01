@@ -1,12 +1,10 @@
 import {
-  type ButtonContent,
   type PageHeaderContent,
   type SeoContent,
   type StrapiBlocks,
   splitKeywords,
   textFromBlocks,
 } from '@/lib/content'
-import { normalizeInternalHref, reservationPath } from '@/lib/routes'
 import { getStrapiMediaUrl, strapiFetch } from '@/lib/strapi'
 
 export type AboutContent = {
@@ -15,19 +13,14 @@ export type AboutContent = {
   image: { url: string; alt: string }
   storyTitle: string
   storyParagraphs: string[]
+  experience: {
+    eyebrow: string
+    title: string
+    paragraphs: string[]
+    image: { url: string; alt: string }
+  }
   certificationsTitle: string
   certifications: string[]
-  socialsTitle: string
-  socials: Array<{
-    platform: 'instagram' | 'whatsapp' | 'nolio'
-    label: string
-    href: string
-  }>
-  philosophyTitle: string
-  principles: Array<{ title: string; description: string }>
-  ctaTitle: string
-  primaryButton: ButtonContent
-  secondaryButton: ButtonContent
 }
 
 export const fallbackAbout: AboutContent = {
@@ -53,6 +46,18 @@ export const fallbackAbout: AboutContent = {
     'Après plusieurs années de compétition et un diplôme d’État en poche, j’ai choisi d’accompagner d’autres coureurs. Depuis, j’ai suivi plus de 120 athlètes, du débutant complet au marathonien cherchant à battre son record.',
     'Mon approche repose sur l’individualisation : aucun plan standardisé, mais un entraînement pensé pour vous, votre vie et vos ambitions.',
   ],
+  experience: {
+    eyebrow: 'Performances',
+    title: 'Une expérience forgée sur route comme en montagne.',
+    paragraphs: [
+      'Alexandre a construit son parcours en alternant les formats : 10 km, semi-marathon, marathon et trail. Ces expériences lui donnent une lecture concrète de l’effort, de la progression et de la gestion d’une préparation.',
+      'Du Marathon de Paris aux sentiers du Ventoux, en passant par les courses en Savoie et Haute-Savoie, il s’appuie sur ce vécu pour accompagner chaque coureur avec des repères simples, réalistes et adaptés au terrain.',
+    ],
+    image: {
+      url: '/images/hero-trail.jpg',
+      alt: 'Coureur de trail en montagne',
+    },
+  },
   certificationsTitle: 'Certifications',
   certifications: [
     'BPJEPS Athlétisme — course hors stade',
@@ -60,41 +65,6 @@ export const fallbackAbout: AboutContent = {
     'Formation trail & ultra-endurance',
     'Premiers secours (PSC1)',
   ],
-  socialsTitle: 'Me suivre',
-  socials: [
-    {
-      platform: 'instagram',
-      label: 'Instagram',
-      href: 'https://instagram.com',
-    },
-    {
-      platform: 'whatsapp',
-      label: 'WhatsApp',
-      href: 'https://wa.me/33600000000',
-    },
-    { platform: 'nolio', label: 'Nolio', href: 'https://nolio.io' },
-  ],
-  philosophyTitle: 'Ma philosophie de coaching',
-  principles: [
-    {
-      title: 'Progressivité avant tout',
-      description:
-        'On construit la performance sur des bases solides. Pas de surcharge : chaque semaine prépare la suivante.',
-    },
-    {
-      title: 'À l’écoute du corps',
-      description:
-        'Sensations, sommeil, fatigue : le plan s’ajuste à votre vie réelle, pas l’inverse. La régularité prime sur l’intensité.',
-    },
-    {
-      title: 'Le plaisir comme moteur',
-      description:
-        'Courir doit rester un plaisir. Les paysages de Savoie sont mon terrain de jeu, et je veux qu’ils deviennent le vôtre.',
-    },
-  ],
-  ctaTitle: 'On court ensemble ?',
-  primaryButton: { label: 'Réserver un coaching', href: reservationPath },
-  secondaryButton: { label: 'Voir les prestations', href: '/services' },
 }
 
 type StrapiAbout = {
@@ -104,19 +74,13 @@ type StrapiAbout = {
   texteAlternatifPhoto?: string | null
   titreParcours?: string | null
   parcours?: StrapiBlocks | null
+  surtitreExperience?: string | null
+  titreExperience?: string | null
+  contenuExperience?: StrapiBlocks | null
+  imageExperience?: { url?: string; alternativeText?: string } | null
+  texteAlternatifImageExperience?: string | null
   titreCertifications?: string | null
   certifications?: Array<{ label?: string | null }> | null
-  titreReseaux?: string | null
-  reseaux?: Array<{
-    plateforme?: AboutContent['socials'][number]['platform']
-    libelle?: string | null
-    lien?: string | null
-  }> | null
-  titrePhilosophie?: string | null
-  principes?: Array<{ titre?: string; description?: string }> | null
-  titreAppelAction?: string | null
-  boutonPrincipal?: { label?: string; href?: string } | null
-  boutonSecondaire?: { label?: string; href?: string } | null
 }
 
 export async function getAboutContent(): Promise<AboutContent> {
@@ -136,30 +100,12 @@ export async function getAboutContent(): Promise<AboutContent> {
     const story = textFromBlocks(data.parcours)
       .split('\n\n')
       .filter(Boolean)
+    const experienceParagraphs = textFromBlocks(data.contenuExperience)
+      .split('\n\n')
+      .filter(Boolean)
     const certifications =
       data.certifications?.map((item) => item.label?.trim()).filter(Boolean) ??
       []
-    const socials =
-      data.reseaux
-        ?.map((social) => ({
-          platform: social.plateforme,
-          label: social.libelle?.trim() ?? '',
-          href: social.lien?.trim() ?? '',
-        }))
-        .filter(
-          (
-            social,
-          ): social is AboutContent['socials'][number] =>
-            Boolean(social.platform && social.label && social.href),
-        ) ?? []
-    const principles =
-      data.principes
-        ?.map((item) => ({
-          title: item.titre?.trim() ?? '',
-          description: item.description?.trim() ?? '',
-        }))
-        .filter((item) => item.title && item.description) ?? []
-
     return {
       seo: {
         title: data.seo?.titre?.trim() || fallbackAbout.seo.title,
@@ -186,6 +132,24 @@ export async function getAboutContent(): Promise<AboutContent> {
       },
       storyTitle: data.titreParcours?.trim() || fallbackAbout.storyTitle,
       storyParagraphs: story.length > 0 ? story : fallbackAbout.storyParagraphs,
+      experience: {
+        eyebrow:
+          data.surtitreExperience?.trim() || fallbackAbout.experience.eyebrow,
+        title: data.titreExperience?.trim() || fallbackAbout.experience.title,
+        paragraphs:
+          experienceParagraphs.length > 0
+            ? experienceParagraphs
+            : fallbackAbout.experience.paragraphs,
+        image: {
+          url:
+            getStrapiMediaUrl(data.imageExperience?.url) ||
+            fallbackAbout.experience.image.url,
+          alt:
+            data.texteAlternatifImageExperience?.trim() ||
+            data.imageExperience?.alternativeText?.trim() ||
+            fallbackAbout.experience.image.alt,
+        },
+      },
       certificationsTitle:
         data.titreCertifications?.trim() ||
         fallbackAbout.certificationsTitle,
@@ -193,32 +157,6 @@ export async function getAboutContent(): Promise<AboutContent> {
         certifications.length > 0
           ? (certifications as string[])
           : fallbackAbout.certifications,
-      socialsTitle: data.titreReseaux?.trim() || fallbackAbout.socialsTitle,
-      socials: socials.length > 0 ? socials : fallbackAbout.socials,
-      philosophyTitle:
-        data.titrePhilosophie?.trim() || fallbackAbout.philosophyTitle,
-      principles:
-        principles.length > 0 ? principles : fallbackAbout.principles,
-      ctaTitle:
-        data.titreAppelAction?.trim() || fallbackAbout.ctaTitle,
-      primaryButton: {
-        label:
-          data.boutonPrincipal?.label?.trim() ||
-          fallbackAbout.primaryButton.label,
-        href: normalizeInternalHref(
-          data.boutonPrincipal?.href?.trim() ||
-            fallbackAbout.primaryButton.href,
-        ),
-      },
-      secondaryButton: {
-        label:
-          data.boutonSecondaire?.label?.trim() ||
-          fallbackAbout.secondaryButton.label,
-        href: normalizeInternalHref(
-          data.boutonSecondaire?.href?.trim() ||
-            fallbackAbout.secondaryButton.href,
-        ),
-      },
     }
   } catch {
     return fallbackAbout

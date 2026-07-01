@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { ArrowUpRight, Check, Star } from 'lucide-react'
+import { ArrowUpRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { PageTransition } from '@/components/animation/page-transition'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { Reveal } from '@/components/animation/reveal'
@@ -11,9 +12,11 @@ import { getServices, getServicesPageContent } from '@/lib/services'
 import { cn } from '@/lib/utils'
 import { metadataFromSeo } from '@/lib/content'
 
+const pageFadeTransition = ['page-fade']
+
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getServicesPageContent()
-  return metadataFromSeo(content.seo)
+  return metadataFromSeo(content.seo, '/services')
 }
 
 export default async function ServicesPage() {
@@ -25,12 +28,13 @@ export default async function ServicesPage() {
   return (
     <>
       <SiteHeader />
-      <main>
+      <PageTransition>
+        <main>
         {/* Editorial hero — centered hierarchy */}
         <section className="bg-card">
           <div className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-6 sm:py-16 lg:py-20">
             <Reveal className="mx-auto flex max-w-3xl flex-col items-center text-center">
-              <h1 className="text-balance font-heading text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
+              <h1 className="text-balance font-heading text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
                 {pageContent.header.title}
               </h1>
               <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -58,7 +62,7 @@ export default async function ServicesPage() {
               <ParallaxImage
                 src={pageContent.plansSection.image.url}
                 alt={pageContent.plansSection.image.alt}
-                className="relative aspect-[4/5] rounded-[22px]"
+                className="relative aspect-[4/5] rounded-2xl"
                 sizes="(min-width: 1024px) 40vw, 100vw"
                 reveal
               />
@@ -69,7 +73,7 @@ export default async function ServicesPage() {
                 <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
                   {pageContent.plansSection.eyebrow}
                 </p>
-                <h2 className="mt-3 text-balance font-heading text-4xl font-medium tracking-[-0.05em] sm:text-5xl">
+                <h2 className="mt-3 text-balance font-heading text-3xl font-extrabold leading-[1.04] tracking-tight sm:text-4xl">
                   {pageContent.plansSection.title}
                 </h2>
                 <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">
@@ -89,7 +93,8 @@ export default async function ServicesPage() {
                   >
                     <Link
                       href={`/plans/${ebook.slug}`}
-                      className="group flex flex-wrap items-center justify-between gap-x-4 gap-y-3 py-5 transition-colors hover:bg-background/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      transitionTypes={pageFadeTransition}
+                      className="group flex flex-col items-stretch gap-3 py-5 transition-colors hover:bg-background/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
                     >
                       <div className="min-w-0">
                         <p className="font-heading text-lg font-medium leading-snug">
@@ -99,7 +104,7 @@ export default async function ServicesPage() {
                           {ebook.detail}
                         </p>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
                         <span className="font-heading text-lg font-medium tracking-tight">
                           {ebook.price}
                         </span>
@@ -116,7 +121,8 @@ export default async function ServicesPage() {
           </div>
         </section>
 
-      </main>
+        </main>
+      </PageTransition>
       <SiteFooter />
     </>
   )
@@ -132,29 +138,18 @@ function ServiceCard({
   return (
     <StaggerItem
       className={cn(
-        'group flex flex-col rounded-3xl border p-7 transition-transform duration-200 hover:-translate-y-0.5',
+        'group flex flex-col rounded-2xl border p-7',
         service.featured
           ? 'bg-primary text-primary-foreground shadow-lg lg:-my-2 lg:py-9'
           : 'border-border bg-card shadow-sm hover:shadow-md',
       )}
     >
       {service.featured && (
-        <span className="mb-5 inline-flex w-fit items-center gap-1.5 rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground">
-          <Star className="size-3 fill-current" />
+        <span className="mb-5 inline-flex w-fit rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground">
           {service.featuredLabel ?? 'Le plus populaire'}
         </span>
       )}
-      <div
-        className={cn(
-          'flex size-12 items-center justify-center rounded-2xl',
-          service.featured
-            ? 'bg-primary-foreground/15 text-primary-foreground'
-            : 'bg-accent text-accent-foreground',
-        )}
-      >
-        <service.icon className="size-6" />
-      </div>
-      <h2 className="mt-5 font-heading text-xl font-bold">{service.name}</h2>
+      <h2 className="font-heading text-xl font-bold">{service.name}</h2>
       <p
         className={cn(
           'mt-1 text-sm',
@@ -218,6 +213,11 @@ function ServiceCard({
       >
         <Link
           href={service.ctaHref}
+          transitionTypes={
+            service.ctaHref.startsWith('/') && !service.ctaHref.includes('#')
+              ? pageFadeTransition
+              : undefined
+          }
           target={isExternal ? '_blank' : undefined}
           rel={isExternal ? 'noreferrer' : undefined}
         >

@@ -77,18 +77,6 @@ export interface HomepageHero extends Struct.ComponentSchema {
   };
 }
 
-export interface PageAProposPrincipe extends Struct.ComponentSchema {
-  collectionName: 'components_page_a_propos_principes';
-  info: {
-    displayName: 'Principe de coaching';
-    icon: 'lightbulb';
-  };
-  attributes: {
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    titre: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
 export interface PageAccueilIntroductionSection extends Struct.ComponentSchema {
   collectionName: 'components_page_accueil_introductions_section';
   info: {
@@ -123,81 +111,6 @@ export interface PageAccueilTemoignage extends Struct.ComponentSchema {
         number
       > &
       Schema.Attribute.DefaultTo<5>;
-  };
-}
-
-export interface PageContactCoordonnee extends Struct.ComponentSchema {
-  collectionName: 'components_page_contact_coordonnees';
-  info: {
-    displayName: 'Coordonn\u00E9e';
-    icon: 'pinMap';
-  };
-  attributes: {
-    libelle: Schema.Attribute.String & Schema.Attribute.Required;
-    lien: Schema.Attribute.String;
-    type: Schema.Attribute.Enumeration<
-      ['zone', 'email', 'telephone', 'instagram']
-    > &
-      Schema.Attribute.Required;
-    valeur: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface PageContactHoraire extends Struct.ComponentSchema {
-  collectionName: 'components_page_contact_horaires';
-  info: {
-    displayName: 'Horaire';
-    icon: 'clock';
-  };
-  attributes: {
-    heures: Schema.Attribute.String & Schema.Attribute.Required;
-    jours: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface PageReservationJourFerme extends Struct.ComponentSchema {
-  collectionName: 'components_page_reservation_jours_fermes';
-  info: {
-    displayName: 'Jour ferm\u00E9';
-    icon: 'calendar';
-  };
-  attributes: {
-    jour: Schema.Attribute.Enumeration<
-      ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
-    > &
-      Schema.Attribute.Required;
-  };
-}
-
-export interface PageReservationReassurance extends Struct.ComponentSchema {
-  collectionName: 'components_page_reservation_reassurances';
-  info: {
-    displayName: '\u00C9l\u00E9ment de r\u00E9assurance';
-    icon: 'shield';
-  };
-  attributes: {
-    icone: Schema.Attribute.Enumeration<
-      ['horloge', 'localisation', 'securite']
-    > &
-      Schema.Attribute.Required;
-    texte: Schema.Attribute.Text & Schema.Attribute.Required;
-    titre: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface PageReservationTypeSeance extends Struct.ComponentSchema {
-  collectionName: 'components_page_reservation_types_seance';
-  info: {
-    displayName: 'Type de s\u00E9ance';
-    icon: 'calendar';
-  };
-  attributes: {
-    duree: Schema.Attribute.String & Schema.Attribute.Required;
-    icone: Schema.Attribute.Enumeration<['video', 'localisation']> &
-      Schema.Attribute.Required;
-    identifiant: Schema.Attribute.String & Schema.Attribute.Required;
-    libelle: Schema.Attribute.String & Schema.Attribute.Required;
-    mode: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -247,22 +160,6 @@ export interface PartageLien extends Struct.ComponentSchema {
   attributes: {
     libelle: Schema.Attribute.String & Schema.Attribute.Required;
     lien: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface PartageReseauSocial extends Struct.ComponentSchema {
-  collectionName: 'components_partage_reseaux_sociaux';
-  info: {
-    displayName: 'R\u00E9seau social';
-    icon: 'earth';
-  };
-  attributes: {
-    libelle: Schema.Attribute.String & Schema.Attribute.Required;
-    lien: Schema.Attribute.String & Schema.Attribute.Required;
-    plateforme: Schema.Attribute.Enumeration<
-      ['instagram', 'whatsapp', 'nolio']
-    > &
-      Schema.Attribute.Required;
   };
 }
 
@@ -321,8 +218,6 @@ export interface ServicesPagePlan extends Struct.ComponentSchema {
     coverAlt: Schema.Attribute.String;
     detail: Schema.Attribute.String & Schema.Attribute.Required;
     longDescription: Schema.Attribute.Text;
-    price: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    receives: Schema.Attribute.Component<'services-page.plan-list-item', true>;
     slug: Schema.Attribute.Enumeration<
       [
         'plan-10-km',
@@ -382,8 +277,6 @@ export interface ServicesPageServiceCard extends Struct.ComponentSchema {
     featuredLabel: Schema.Attribute.String;
     features: Schema.Attribute.Component<'shared.feature', true>;
     image: Schema.Attribute.Media<'images'>;
-    price: Schema.Attribute.Decimal;
-    priceNote: Schema.Attribute.String;
     slug: Schema.Attribute.String & Schema.Attribute.Required;
     tagline: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -433,19 +326,12 @@ declare module '@strapi/strapi' {
       'homepage.faq': HomepageFaq;
       'homepage.final-cta': HomepageFinalCta;
       'homepage.hero': HomepageHero;
-      'page-a-propos.principe': PageAProposPrincipe;
       'page-accueil.introduction-section': PageAccueilIntroductionSection;
       'page-accueil.temoignage': PageAccueilTemoignage;
-      'page-contact.coordonnee': PageContactCoordonnee;
-      'page-contact.horaire': PageContactHoraire;
-      'page-reservation.jour-ferme': PageReservationJourFerme;
-      'page-reservation.reassurance': PageReservationReassurance;
-      'page-reservation.type-seance': PageReservationTypeSeance;
       'partage.colonne-liens': PartageColonneLiens;
       'partage.element-liste': PartageElementListe;
       'partage.entete-page': PartageEntetePage;
       'partage.lien': PartageLien;
-      'partage.reseau-social': PartageReseauSocial;
       'partage.seo': PartageSeo;
       'services-page.final-cta': ServicesPageFinalCta;
       'services-page.page-header': ServicesPagePageHeader;
