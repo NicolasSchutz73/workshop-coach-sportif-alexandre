@@ -1,4 +1,5 @@
 import { SectionHeading } from '@/components/section-heading'
+import { Reveal } from '@/components/animation/reveal'
 import {
   Accordion,
   AccordionContent,
@@ -16,13 +17,16 @@ export function Faq({ faqs, intro }: FaqProps) {
   return (
     <section className="border-t border-border/60 bg-card">
       <div className="mx-auto w-full max-w-3xl px-5 py-16 sm:px-6 sm:py-24">
-        <SectionHeading
-          eyebrow={intro.eyebrow}
-          title={intro.title}
-          description={intro.description}
-          align="center"
-        />
-        <Accordion type="single" collapsible className="mt-10 w-full">
+        <Reveal>
+          <SectionHeading
+            eyebrow={intro.eyebrow}
+            title={intro.title}
+            description={intro.description}
+            align="center"
+          />
+        </Reveal>
+        <Reveal as="div" delay={0.05}>
+          <Accordion type="single" collapsible className="mt-10 w-full">
           {faqs.map((faq, i) => (
             <AccordionItem key={faq.question} value={`item-${i}`}>
               <AccordionTrigger className="text-left font-heading text-base font-semibold">
@@ -33,7 +37,8 @@ export function Faq({ faqs, intro }: FaqProps) {
               </AccordionContent>
             </AccordionItem>
           ))}
-        </Accordion>
+          </Accordion>
+        </Reveal>
       </div>
     </section>
   )

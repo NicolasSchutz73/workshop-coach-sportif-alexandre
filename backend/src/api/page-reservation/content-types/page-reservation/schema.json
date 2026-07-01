@@ -1,0 +1,47 @@
+{
+  "kind": "singleType",
+  "collectionName": "pages_reservation",
+  "info": {
+    "singularName": "page-reservation",
+    "pluralName": "pages-reservation",
+    "displayName": "Page Réservation",
+    "description": "Contenu et données métier de la page Réservation"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nomInterne": {
+      "type": "string",
+      "required": true,
+      "default": "Page Réservation"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo",
+      "required": true
+    },
+    "entete": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.entete-page",
+      "required": true
+    },
+    "titreDeroulement": {
+      "type": "string",
+      "required": true
+    },
+    "etapes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "partage.element-liste",
+      "required": true
+    },
+    "texteSansPaiement": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

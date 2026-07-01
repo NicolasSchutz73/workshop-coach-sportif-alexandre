@@ -1,0 +1,89 @@
+{
+  "collectionName": "components_homepage_heroes",
+  "info": {
+    "displayName": "1. Bannière principale",
+    "icon": "picture"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "location": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "primaryButton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    },
+    "secondaryButton": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "image": {
+        "edit": {
+          "label": "Image de fond"
+        },
+        "list": {
+          "label": "Image"
+        }
+      },
+      "location": {
+        "edit": {
+          "label": "Localisation"
+        },
+        "list": {
+          "label": "Localisation"
+        }
+      },
+      "title": {
+        "edit": {
+          "label": "Titre principal"
+        },
+        "list": {
+          "label": "Titre"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      },
+      "primaryButton": {
+        "edit": {
+          "label": "Bouton principal"
+        },
+        "list": {
+          "label": "Bouton principal"
+        }
+      },
+      "secondaryButton": {
+        "edit": {
+          "label": "Bouton secondaire"
+        },
+        "list": {
+          "label": "Bouton secondaire"
+        }
+      }
+    }
+  }
+}

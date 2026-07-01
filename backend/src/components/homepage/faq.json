@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_homepage_faqs",
+  "info": {
+    "displayName": "Question fréquente",
+    "icon": "question"
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "answer": {
+      "type": "text",
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "question": {
+        "edit": {
+          "label": "Question"
+        },
+        "list": {
+          "label": "Question"
+        }
+      },
+      "answer": {
+        "edit": {
+          "label": "Réponse"
+        },
+        "list": {
+          "label": "Réponse"
+        }
+      }
+    }
+  }
+}

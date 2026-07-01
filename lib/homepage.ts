@@ -6,6 +6,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { getStrapiMediaUrl, strapiFetch } from '@/lib/strapi'
+import { normalizeInternalHref, reservationPath } from '@/lib/routes'
 import {
   type SeoContent,
   splitKeywords,
@@ -146,15 +147,15 @@ export const fallbackFaqIntro: SectionIntroContent = {
 }
 
 export const fallbackHomepageHero: HomepageHero = {
-  bannerImageUrl: '/images/hero-trail.png',
+  bannerImageUrl: '/images/hero-trail.jpg',
   bannerImageAlt:
-    'Coureur de trail sur une crête de montagne au lever du soleil en Savoie',
+    'Coureur de trail sur un sentier de montagne enneigé',
   location: 'Chambéry · Aix-les-Bains · Lac du Bourget',
   title: 'Courez plus loin, progressez plus vite.',
   description:
     'Coaching running & trail personnalisé en Savoie. Un accompagnement sur-mesure pour préparer votre marathon, votre trail ou simplement reprendre le plaisir de courir.',
   primaryButtonLabel: 'Réserver un coaching',
-  primaryButtonHref: '/booking',
+  primaryButtonHref: reservationPath,
   secondaryButtonLabel: 'Découvrir les prestations',
   secondaryButtonHref: '/services',
 }
@@ -236,7 +237,7 @@ export const fallbackFinalCta: FinalCtaContent = {
     'Réservez votre premier échange gratuit. On définit ensemble vos objectifs et le plan pour les atteindre.',
   primaryButton: {
     label: 'Réserver un coaching',
-    href: '/booking',
+    href: reservationPath,
   },
   secondaryButton: {
     label: 'Poser une question',
@@ -410,11 +411,11 @@ function normalizeButton(
 ): CtaButtonContent {
   return {
     label: button?.label?.trim() || fallback.label,
-    href: button?.href?.trim() || fallback.href,
+    href: normalizeInternalHref(button?.href?.trim() || fallback.href),
   }
 }
 
-function mapHomepage(data: StrapiHomepage): HomepageContent {
+export function mapHomepage(data: StrapiHomepage): HomepageContent {
   const heroImage = normalizeImage(data.hero?.image)
   const aboutImage = normalizeImage(data.aboutPreview?.image)
   const finalCtaImage = normalizeImage(data.finalCta?.image)
@@ -480,10 +481,9 @@ function mapHomepage(data: StrapiHomepage): HomepageContent {
         seoKeywords.length > 0 ? seoKeywords : fallbackHomepageSeo.keywords,
     },
     hero: {
-      bannerImageUrl:
-        heroImage?.url || fallbackHomepageHero.bannerImageUrl,
+      bannerImageUrl: heroImage?.url || fallbackHomepageHero.bannerImageUrl,
       bannerImageAlt:
-        heroImage?.alt || fallbackHomepageHero.bannerImageAlt,
+        heroImage?.alt?.trim() || fallbackHomepageHero.bannerImageAlt,
       location:
         data.hero?.location?.trim() || fallbackHomepageHero.location,
       title: data.hero?.title?.trim() || fallbackHomepageHero.title,

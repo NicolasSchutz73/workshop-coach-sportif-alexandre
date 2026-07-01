@@ -1,6 +1,14 @@
 import Link from 'next/link'
 import { Camera, MessageCircle, Activity } from 'lucide-react'
-import { getFooter } from '@/lib/footer'
+import { getFooter, legalLinks } from '@/lib/footer'
+
+const pageFadeTransition = ['page-fade']
+
+function getTransitionTypes(href: string) {
+  return href.startsWith('/') && !href.includes('#')
+    ? pageFadeTransition
+    : undefined
+}
 
 export async function SiteFooter() {
   const content = await getFooter()
@@ -8,15 +16,19 @@ export async function SiteFooter() {
     { href: content.instagramUrl, label: 'Instagram', icon: Camera },
     { href: content.whatsappUrl, label: 'WhatsApp', icon: MessageCircle },
     { href: content.nolioUrl, label: 'Nolio', icon: Activity },
-  ]
+  ].filter((social): social is typeof social & { href: string } => Boolean(social.href))
 
   return (
     <footer className="bg-foreground text-background">
       <div className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-18">
         <div className="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
           <div>
-            <Link href="/" className="flex items-center gap-2">
-              <span className="font-heading text-xl font-medium tracking-[-0.05em]">
+            <Link
+              href="/"
+              transitionTypes={pageFadeTransition}
+              className="flex items-center gap-2"
+            >
+              <span className="font-heading text-xl font-semibold tracking-tight">
                 {content.brandName}
               </span>
             </Link>
@@ -41,12 +53,13 @@ export async function SiteFooter() {
 
           {content.columns.map((col) => (
             <div key={col.title}>
-              <h3 className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.16em] text-background/55">{col.title}</h3>
+              <h2 className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.16em] text-background/55">{col.title}</h2>
               <ul className="mt-4 space-y-3">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
+                      transitionTypes={getTransitionTypes(link.href)}
                       className="text-sm text-background/75 transition-colors hover:text-background"
                     >
                       {link.label}
@@ -62,9 +75,19 @@ export async function SiteFooter() {
           <p>
             © {new Date().getFullYear()} {content.copyrightText}
           </p>
-          <p className="font-mono text-xs uppercase tracking-wider">
-            {content.locationText}
-          </p>
+          <nav aria-label="Liens légaux" className="flex flex-wrap gap-x-4 gap-y-2">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                transitionTypes={getTransitionTypes(link.href)}
+                className="transition-colors hover:text-background"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <p className="font-mono text-xs uppercase tracking-wider">{content.locationText}</p>
         </div>
       </div>
     </footer>

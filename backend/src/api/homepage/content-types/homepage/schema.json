@@ -1,0 +1,124 @@
+{
+  "kind": "singleType",
+  "collectionName": "homepages",
+  "info": {
+    "singularName": "homepage",
+    "pluralName": "homepages",
+    "displayName": "Page d'accueil",
+    "description": "Toutes les sections administrables de la page d'accueil"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo"
+    },
+    "internalName": {
+      "type": "string",
+      "required": true,
+      "default": "Page d'accueil"
+    },
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "homepage.hero"
+    },
+    "benefits": {
+      "type": "component",
+      "repeatable": true,
+      "component": "homepage.benefit"
+    },
+    "aboutPreview": {
+      "type": "component",
+      "repeatable": false,
+      "component": "homepage.about-preview"
+    },
+    "faqs": {
+      "type": "component",
+      "repeatable": true,
+      "component": "homepage.faq"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "homepage.final-cta"
+    },
+    "introductionPrestations": {
+      "type": "component",
+      "repeatable": false,
+      "component": "page-accueil.introduction-section"
+    },
+    "introductionTemoignages": {
+      "type": "component",
+      "repeatable": false,
+      "component": "page-accueil.introduction-section"
+    },
+    "temoignages": {
+      "type": "component",
+      "repeatable": true,
+      "component": "page-accueil.temoignage"
+    },
+    "introductionFaq": {
+      "type": "component",
+      "repeatable": false,
+      "component": "page-accueil.introduction-section"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "internalName": {
+        "edit": {
+          "label": "Nom de la page",
+          "visible": false
+        },
+        "list": {
+          "label": "Nom de la page"
+        }
+      },
+      "hero": {
+        "edit": {
+          "label": "1. Bannière principale"
+        },
+        "list": {
+          "label": "Bannière principale"
+        }
+      },
+      "benefits": {
+        "edit": {
+          "label": "2. Bénéfices"
+        },
+        "list": {
+          "label": "Bénéfices"
+        }
+      },
+      "aboutPreview": {
+        "edit": {
+          "label": "3. Aperçu À propos"
+        },
+        "list": {
+          "label": "Aperçu À propos"
+        }
+      },
+      "faqs": {
+        "edit": {
+          "label": "4. Questions fréquentes"
+        },
+        "list": {
+          "label": "Questions fréquentes"
+        }
+      },
+      "finalCta": {
+        "edit": {
+          "label": "5. Appel à l'action final"
+        },
+        "list": {
+          "label": "Appel à l'action final"
+        }
+      }
+    }
+  }
+}

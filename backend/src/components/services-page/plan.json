@@ -1,0 +1,117 @@
+{
+  "collectionName": "components_services_page_plans",
+  "info": {
+    "displayName": "Plan d'entraînement",
+    "icon": "file"
+  },
+  "options": {},
+  "attributes": {
+    "slug": {
+      "type": "enumeration",
+      "enum": [
+        "plan-10-km",
+        "plan-semi-marathon",
+        "plan-marathon",
+        "plan-trail-decouverte"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "detail": {
+      "type": "string",
+      "required": true
+    },
+    "button": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button",
+      "required": true
+    },
+    "longDescription": {
+      "type": "text"
+    },
+    "cover": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "coverAlt": {
+      "type": "string"
+    },
+    "contentsPreview": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "contentsPreviewAlt": {
+      "type": "string"
+    },
+    "tableOfContents": {
+      "type": "component",
+      "repeatable": true,
+      "component": "services-page.plan-list-item"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "slug": {
+        "edit": {
+          "label": "Produit LemonSqueezy"
+        },
+        "list": {
+          "label": "Produit"
+        }
+      },
+      "title": {
+        "edit": {
+          "label": "Nom du plan"
+        },
+        "list": {
+          "label": "Nom"
+        }
+      },
+      "detail": {
+        "edit": {
+          "label": "Durée et niveau"
+        },
+        "list": {
+          "label": "Détail"
+        }
+      },
+      "button": {
+        "edit": {
+          "label": "Bouton d'achat"
+        },
+        "list": {
+          "label": "Bouton"
+        }
+      },
+      "longDescription": {
+        "edit": { "label": "Description longue" },
+        "list": { "label": "Description longue" }
+      },
+      "cover": {
+        "edit": { "label": "Image de couverture" },
+        "list": { "label": "Couverture" }
+      },
+      "coverAlt": {
+        "edit": { "label": "Texte alternatif de la couverture" },
+        "list": { "label": "Texte alternatif couverture" }
+      },
+      "contentsPreview": {
+        "edit": { "label": "Image d’aperçu du sommaire" },
+        "list": { "label": "Aperçu du sommaire" }
+      },
+      "contentsPreviewAlt": {
+        "edit": { "label": "Texte alternatif de l’aperçu" },
+        "list": { "label": "Texte alternatif aperçu" }
+      },
+      "tableOfContents": {
+        "edit": { "label": "Sommaire" },
+        "list": { "label": "Sommaire" }
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "collectionName": "components_homepage_about_previews",
+  "info": {
+    "displayName": "3. Aperçu À propos",
+    "icon": "user"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "certifications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.certification"
+    },
+    "button": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button"
+    }
+  },
+  "config": {
+    "metadatas": {
+      "eyebrow": {
+        "edit": {
+          "label": "Surtitre"
+        },
+        "list": {
+          "label": "Surtitre"
+        }
+      },
+      "title": {
+        "edit": {
+          "label": "Titre"
+        },
+        "list": {
+          "label": "Titre"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      },
+      "image": {
+        "edit": {
+          "label": "Photo"
+        },
+        "list": {
+          "label": "Photo"
+        }
+      },
+      "imageAlt": {
+        "edit": {
+          "label": "Texte alternatif de la photo"
+        },
+        "list": {
+          "label": "Texte alternatif"
+        }
+      },
+      "certifications": {
+        "edit": {
+          "label": "Certifications"
+        },
+        "list": {
+          "label": "Certifications"
+        }
+      },
+      "button": {
+        "edit": {
+          "label": "Bouton"
+        },
+        "list": {
+          "label": "Bouton"
+        }
+      }
+    }
+  }
+}

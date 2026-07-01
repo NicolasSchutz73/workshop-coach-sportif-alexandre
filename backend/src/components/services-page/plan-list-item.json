@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_services_page_plan_list_items",
+  "info": {
+    "displayName": "Élément de liste de plan",
+    "icon": "check"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "title": {
+        "edit": {
+          "label": "Libellé"
+        },
+        "list": {
+          "label": "Libellé"
+        }
+      }
+    }
+  }
+}

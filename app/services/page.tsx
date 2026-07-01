@@ -1,18 +1,22 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Metadata } from 'next'
-import { ArrowRight, Check, Star } from 'lucide-react'
+import { ArrowUpRight, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PageHero } from '@/components/page-hero'
+import { PageTransition } from '@/components/animation/page-transition'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { Reveal } from '@/components/animation/reveal'
+import { ParallaxImage } from '@/components/animation/parallax-image'
+import { StaggerGroup, StaggerItem } from '@/components/animation/stagger'
 import { getServices, getServicesPageContent } from '@/lib/services'
 import { cn } from '@/lib/utils'
 import { metadataFromSeo } from '@/lib/content'
 
+const pageFadeTransition = ['page-fade']
+
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getServicesPageContent()
-  return metadataFromSeo(content.seo)
+  return metadataFromSeo(content.seo, '/services')
 }
 
 export default async function ServicesPage() {
@@ -24,142 +28,202 @@ export default async function ServicesPage() {
   return (
     <>
       <SiteHeader />
-      <main>
-      <PageHero
-        eyebrow={pageContent.header.eyebrow}
-        title={pageContent.header.title}
-        description={pageContent.header.description}
-      />
+      <PageTransition>
+        <main>
+        {/* Editorial hero — centered hierarchy */}
+        <section className="bg-card">
+          <div className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-6 sm:py-16 lg:py-20">
+            <Reveal className="mx-auto flex max-w-3xl flex-col items-center text-center">
+              <h1 className="text-balance font-heading text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
+                {pageContent.header.title}
+              </h1>
+              <p className="mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+                {pageContent.header.description}
+              </p>
+            </Reveal>
+          </div>
+        </section>
 
-      <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-20">
-        <div className="grid gap-5 lg:grid-cols-3">
-          {services
-            .filter((s) => s.slug !== 'ebooks-plans')
-            .map((service) => (
-              <div
-                key={service.slug}
-                className={cn(
-                  'relative flex flex-col rounded-3xl border border-border bg-card p-7 shadow-sm',
-                  service.featured && 'border-primary/50 ring-1 ring-primary/20',
-                )}
-              >
-                {service.featured && (
-                  <span className="absolute -top-3 left-7 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                    <Star className="size-3 fill-current" />
-                    {service.featuredLabel ?? 'Le plus populaire'}
-                  </span>
-                )}
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
-                  <service.icon className="size-6" />
-                </div>
-                <h2 className="mt-5 font-heading text-xl font-bold">
-                  {service.name}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {service.tagline}
-                </p>
-                <div className="mt-5 flex items-baseline gap-1">
-                  <span className="font-heading text-3xl font-extrabold">
-                    {service.price}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {service.priceNote}
-                  </span>
-                </div>
-                <p className="mt-4 text-pretty text-sm leading-relaxed text-muted-foreground">
-                  {service.description}
-                </p>
-                <ul className="mt-6 flex-1 space-y-3">
-                  {service.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5 text-sm">
-                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  asChild
-                  variant={service.featured ? 'default' : 'outline'}
-                  className="mt-7 h-11 rounded-full"
-                >
-                  <Link href={service.ctaHref}>{service.cta}</Link>
-                </Button>
-              </div>
+        {/* Prestations comparatives */}
+        <section className="bg-card">
+          <div className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-6 sm:pb-20">
+            <StaggerGroup className="flex flex-col gap-5 lg:grid lg:grid-cols-3 lg:items-stretch">
+              {services.map((service) => (
+                <ServiceCard key={service.slug} service={service} />
             ))}
-        </div>
-      </section>
-
-      <section className="border-y border-border/60 bg-card">
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <p className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
-              {pageContent.plansSection.eyebrow}
-            </p>
-            <h2 className="text-balance font-heading text-4xl font-medium tracking-[-0.05em] sm:text-5xl">
-              {pageContent.plansSection.title}
-            </h2>
-            <p className="mt-4 text-pretty leading-relaxed text-muted-foreground">
-              {pageContent.plansSection.description}
-            </p>
-
-            <ul className="mt-8 border-t border-foreground/20">
-              {pageContent.plansSection.plans.map((ebook) => (
-                <li
-                  key={ebook.title}
-                  className="flex items-center justify-between gap-4 border-b border-foreground/20 py-4"
-                >
-                  <div>
-                    <p className="font-heading text-sm font-medium">
-                      {ebook.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {ebook.detail}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-heading text-base font-medium">
-                      {ebook.price}
-                    </span>
-                    <Button asChild size="sm">
-                      <Link href={`/plans/${ebook.slug}`}>
-                        {ebook.button.label}
-                      </Link>
-                    </Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            </StaggerGroup>
           </div>
+        </section>
 
-          <div className="relative order-first aspect-[4/3] overflow-hidden rounded-[22px] lg:order-last">
-            <Image
-              src={pageContent.plansSection.image.url}
-              alt={pageContent.plansSection.image.alt}
-              fill
-              className="object-cover"
-            />
+        {/* E-books & plans — distinct editorial universe, sticky image on desktop */}
+        <section id="ebooks" className="scroll-mt-24 border-y border-border/60 bg-card">
+          <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 pb-24 pt-16 sm:px-6 sm:pb-28 sm:pt-20 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <ParallaxImage
+                src={pageContent.plansSection.image.url}
+                alt={pageContent.plansSection.image.alt}
+                className="relative aspect-[4/5] rounded-2xl"
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                reveal
+              />
+            </div>
+
+            <div>
+              <Reveal>
+                <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
+                  {pageContent.plansSection.eyebrow}
+                </p>
+                <h2 className="mt-3 text-balance font-heading text-3xl font-extrabold leading-[1.04] tracking-tight sm:text-4xl">
+                  {pageContent.plansSection.title}
+                </h2>
+                <p className="mt-4 max-w-xl text-pretty leading-relaxed text-muted-foreground">
+                  {pageContent.plansSection.description}
+                </p>
+              </Reveal>
+
+              <StaggerGroup
+                as="ul"
+                className="mt-10 border-t border-foreground/15"
+              >
+                {pageContent.plansSection.plans.map((ebook) => (
+                  <StaggerItem
+                    as="li"
+                    key={ebook.title}
+                    className="border-b border-foreground/15"
+                  >
+                    <Link
+                      href={`/plans/${ebook.slug}`}
+                      transitionTypes={pageFadeTransition}
+                      className="group flex flex-col items-stretch gap-3 py-5 transition-colors hover:bg-background/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-heading text-lg font-medium leading-snug">
+                          {ebook.title}
+                        </p>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                          {ebook.detail}
+                        </p>
+                      </div>
+                      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
+                        <span className="font-heading text-lg font-medium tracking-tight">
+                          {ebook.price}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors group-hover:border-primary group-hover:text-primary">
+                          {ebook.button.label}
+                          <ArrowUpRight className="size-4" />
+                        </span>
+                      </div>
+                    </Link>
+                  </StaggerItem>
+                ))}
+              </StaggerGroup>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-6 sm:py-20">
-        <div className="border-y border-border px-0 py-12 text-center sm:py-16">
-          <h2 className="text-balance font-heading text-3xl font-medium tracking-[-0.05em] sm:text-4xl">
-            {pageContent.finalCta.title}
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-pretty leading-relaxed text-muted-foreground">
-            {pageContent.finalCta.description}
-          </p>
-          <Button asChild size="lg" className="mt-7 h-12 px-7 text-base">
-            <Link href={pageContent.finalCta.button.href}>
-              {pageContent.finalCta.button.label}
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
-        </div>
-      </section>
-    </main>
+        </main>
+      </PageTransition>
       <SiteFooter />
     </>
+  )
+}
+
+function ServiceCard({
+  service,
+}: {
+  service: Awaited<ReturnType<typeof getServices>>[number]
+}) {
+  const isExternal = service.ctaHref.startsWith('http')
+
+  return (
+    <StaggerItem
+      className={cn(
+        'group flex flex-col rounded-2xl border p-7',
+        service.featured
+          ? 'bg-primary text-primary-foreground shadow-lg lg:-my-2 lg:py-9'
+          : 'border-border bg-card shadow-sm hover:shadow-md',
+      )}
+    >
+      {service.featured && (
+        <span className="mb-5 inline-flex w-fit rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-foreground">
+          {service.featuredLabel ?? 'Le plus populaire'}
+        </span>
+      )}
+      <h2 className="font-heading text-xl font-bold">{service.name}</h2>
+      <p
+        className={cn(
+          'mt-1 text-sm',
+          service.featured
+            ? 'text-primary-foreground/75'
+            : 'text-muted-foreground',
+        )}
+      >
+        {service.tagline}
+      </p>
+      <div className="mt-5 flex items-baseline gap-1">
+        <span className="font-heading text-3xl font-extrabold tracking-tight">
+          {service.price}
+        </span>
+        <span
+          className={cn(
+            'text-sm',
+            service.featured
+              ? 'text-primary-foreground/75'
+              : 'text-muted-foreground',
+          )}
+        >
+          {service.priceNote}
+        </span>
+      </div>
+      <p
+        className={cn(
+          'mt-4 text-pretty text-sm leading-relaxed',
+          service.featured
+            ? 'text-primary-foreground/85'
+            : 'text-muted-foreground',
+        )}
+      >
+        {service.description}
+      </p>
+      <ul className="mt-6 flex-1 space-y-3">
+        {service.features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2.5 text-sm">
+            <Check
+              className={cn(
+                'mt-0.5 size-4 shrink-0',
+                service.featured ? 'text-primary-foreground' : 'text-primary',
+              )}
+            />
+            <span
+              className={service.featured ? 'text-primary-foreground/90' : ''}
+            >
+              {feature}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <Button
+        asChild
+        variant={service.featured ? 'secondary' : 'outline'}
+        className={cn(
+          'mt-7 h-11 rounded-full',
+          service.featured &&
+            'bg-primary-foreground text-primary hover:bg-primary-foreground/90',
+        )}
+      >
+        <Link
+          href={service.ctaHref}
+          transitionTypes={
+            service.ctaHref.startsWith('/') && !service.ctaHref.includes('#')
+              ? pageFadeTransition
+              : undefined
+          }
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noreferrer' : undefined}
+        >
+          {service.cta}
+        </Link>
+      </Button>
+    </StaggerItem>
   )
 }

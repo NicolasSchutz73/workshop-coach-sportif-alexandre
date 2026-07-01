@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_partage_liens",
+  "info": {
+    "displayName": "Lien",
+    "icon": "link"
+  },
+  "options": {},
+  "attributes": {
+    "libelle": {
+      "type": "string",
+      "required": true
+    },
+    "lien": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

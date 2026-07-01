@@ -1,0 +1,59 @@
+{
+  "kind": "singleType",
+  "collectionName": "parametres_site",
+  "info": {
+    "singularName": "parametres-site",
+    "pluralName": "parametres-sites",
+    "displayName": "Paramètres du site",
+    "description": "Identité, navigation, référencement global et manifeste de l’application"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nomInterne": {
+      "type": "string",
+      "required": true,
+      "default": "Paramètres du site"
+    },
+    "nomMarque": {
+      "type": "string",
+      "required": true
+    },
+    "navigation": {
+      "type": "component",
+      "repeatable": true,
+      "component": "partage.lien",
+      "required": true
+    },
+    "boutonReservation": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.button",
+      "required": true
+    },
+    "seoGlobal": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo",
+      "required": true
+    },
+    "modeleTitre": {
+      "type": "string",
+      "required": true
+    },
+    "nomApplication": {
+      "type": "string",
+      "required": true
+    },
+    "nomApplicationCourt": {
+      "type": "string",
+      "required": true
+    },
+    "descriptionApplication": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

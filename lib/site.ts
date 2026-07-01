@@ -4,6 +4,7 @@ import {
   type SeoContent,
   splitKeywords,
 } from '@/lib/content'
+import { normalizeInternalHref, reservationPath } from '@/lib/routes'
 
 export type SiteSettings = {
   brandName: string
@@ -26,7 +27,7 @@ export const fallbackSiteSettings: SiteSettings = {
   ],
   bookingButton: {
     label: 'Réserver un coaching',
-    href: '/booking',
+    href: reservationPath,
   },
   globalSeo: {
     title: 'Alexandre Schutz — Coach Running & Trail | Chambéry, Savoie',
@@ -103,8 +104,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
           data.boutonReservation?.label?.trim() ||
           fallbackSiteSettings.bookingButton.label,
         href:
-          data.boutonReservation?.href?.trim() ||
-          fallbackSiteSettings.bookingButton.href,
+          normalizeInternalHref(
+            data.boutonReservation?.href?.trim() ||
+              fallbackSiteSettings.bookingButton.href,
+          ),
       },
       globalSeo: {
         title:

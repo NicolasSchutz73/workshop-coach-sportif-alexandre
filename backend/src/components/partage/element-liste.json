@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_partage_elements_liste",
+  "info": {
+    "displayName": "Élément de liste",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "texte": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

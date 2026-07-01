@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_page_accueil_temoignages",
+  "info": {
+    "displayName": "Témoignage",
+    "icon": "quote"
+  },
+  "options": {},
+  "attributes": {
+    "citation": {
+      "type": "text",
+      "required": true
+    },
+    "nom": {
+      "type": "string",
+      "required": true
+    },
+    "detail": {
+      "type": "string",
+      "required": true
+    },
+    "note": {
+      "type": "integer",
+      "min": 1,
+      "max": 5,
+      "default": 5,
+      "required": true
+    }
+  }
+}

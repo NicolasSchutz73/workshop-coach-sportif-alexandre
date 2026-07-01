@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { ebooks, ebookSlugs, type EbookSlug } from '@/lib/ebooks'
+import { assertCommerceConfiguration } from '@/lib/commerce'
+import { hasOversizedBody, isRateLimited, rateLimitResponse } from '@/lib/request-security'
 
 const checkoutSchema = z
   .object({
@@ -33,6 +35,13 @@ function getCheckoutEnvironment(ebook: EbookSlug) {
 }
 
 export async function POST(request: Request) {
+  if (hasOversizedBody(request)) {
+    return Response.json({ error: 'La requête est trop volumineuse.' }, { status: 413 })
+  }
+  if (isRateLimited(request, 'ebook-checkout', 10, 10 * 60_000)) {
+    return rateLimitResponse()
+  }
+
   const body = await request.json().catch(() => null)
   const parsed = checkoutSchema.safeParse(body)
 
@@ -41,8 +50,10 @@ export async function POST(request: Request) {
   }
 
   let environment: ReturnType<typeof getCheckoutEnvironment>
+  let commerce: ReturnType<typeof assertCommerceConfiguration>
 
   try {
+    commerce = assertCommerceConfiguration()
     environment = getCheckoutEnvironment(parsed.data.ebook)
   } catch (error) {
     console.error(error)
@@ -83,7 +94,7 @@ export async function POST(request: Request) {
             product_options: {
               enabled_variants: [variantId],
             },
-            test_mode: process.env.LEMONSQUEEZY_TEST_MODE === 'true',
+            test_mode: commerce.testMode,
           },
           relationships: {
             store: {

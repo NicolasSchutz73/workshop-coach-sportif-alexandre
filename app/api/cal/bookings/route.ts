@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { createCalBooking, getCalSlots, isCalConflict } from '@/lib/cal'
+import { hasOversizedBody, isRateLimited, rateLimitResponse } from '@/lib/request-security'
 
 const TIME_ZONE = 'Europe/Paris'
 const e164Phone = /^\+[1-9]\d{7,14}$/
@@ -11,6 +12,8 @@ const bookingSchema = z
     email: z.string().trim().email().max(254),
     phone: z.string().trim().regex(e164Phone).optional(),
     message: z.string().trim().max(3000).optional(),
+    bookingVerification: z.string().max(0),
+    formStartedAt: z.number().int().positive(),
   })
   .strict()
 
@@ -38,10 +41,17 @@ async function slotIsStillAvailable(start: string) {
 }
 
 export async function POST(request: Request) {
+  if (hasOversizedBody(request)) {
+    return Response.json({ error: 'La requête est trop volumineuse.' }, { status: 413 })
+  }
+  if (isRateLimited(request, 'cal-booking', 5, 10 * 60_000)) {
+    return rateLimitResponse()
+  }
+
   const body = await request.json().catch(() => null)
   const parsed = bookingSchema.safeParse(body)
 
-  if (!parsed.success) {
+  if (!parsed.success || Date.now() - parsed.data.formStartedAt < 1_500) {
     return Response.json(
       { error: 'Les informations de réservation sont invalides.' },
       { status: 400 },
@@ -56,7 +66,14 @@ export async function POST(request: Request) {
       )
     }
 
-    await createCalBooking(parsed.data)
+    const booking = {
+      start: parsed.data.start,
+      name: parsed.data.name,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      message: parsed.data.message,
+    }
+    await createCalBooking(booking)
     return Response.json({ success: true }, { status: 201 })
   } catch (error) {
     if (isCalConflict(error)) {

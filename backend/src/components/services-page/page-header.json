@@ -1,0 +1,50 @@
+{
+  "collectionName": "components_services_page_headers",
+  "info": {
+    "displayName": "1. En-tête",
+    "icon": "heading"
+  },
+  "options": {},
+  "attributes": {
+    "eyebrow": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "eyebrow": {
+        "edit": {
+          "label": "Surtitre"
+        },
+        "list": {
+          "label": "Surtitre"
+        }
+      },
+      "title": {
+        "edit": {
+          "label": "Titre"
+        },
+        "list": {
+          "label": "Titre"
+        }
+      },
+      "description": {
+        "edit": {
+          "label": "Description"
+        },
+        "list": {
+          "label": "Description"
+        }
+      }
+    }
+  }
+}

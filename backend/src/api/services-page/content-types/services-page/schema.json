@@ -1,0 +1,94 @@
+{
+  "kind": "singleType",
+  "collectionName": "services_pages",
+  "info": {
+    "singularName": "services-page",
+    "pluralName": "services-pages",
+    "displayName": "Page Prestations",
+    "description": "Sections éditables de la page Prestations"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo"
+    },
+    "internalName": {
+      "type": "string",
+      "required": true,
+      "default": "Page Prestations"
+    },
+    "header": {
+      "type": "component",
+      "repeatable": false,
+      "component": "services-page.page-header",
+      "required": true
+    },
+    "services": {
+      "type": "component",
+      "repeatable": true,
+      "component": "services-page.service-card"
+    },
+    "plansSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "services-page.plans-section",
+      "required": true
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "services-page.final-cta",
+      "required": true
+    }
+  },
+  "config": {
+    "metadatas": {
+      "internalName": {
+        "edit": {
+          "label": "Nom de la page",
+          "visible": false
+        },
+        "list": {
+          "label": "Nom de la page"
+        }
+      },
+      "header": {
+        "edit": {
+          "label": "1. En-tête"
+        },
+        "list": {
+          "label": "En-tête"
+        }
+      },
+      "services": {
+        "edit": {
+          "label": "2. Prestations"
+        },
+        "list": {
+          "label": "Prestations"
+        }
+      },
+      "plansSection": {
+        "edit": {
+          "label": "3. E-books et plans"
+        },
+        "list": {
+          "label": "E-books et plans"
+        }
+      },
+      "finalCta": {
+        "edit": {
+          "label": "4. Appel à l'action final"
+        },
+        "list": {
+          "label": "Appel à l'action final"
+        }
+      }
+    }
+  }
+}

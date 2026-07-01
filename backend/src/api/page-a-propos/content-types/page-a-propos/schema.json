@@ -1,0 +1,81 @@
+{
+  "kind": "singleType",
+  "collectionName": "pages_a_propos",
+  "info": {
+    "singularName": "page-a-propos",
+    "pluralName": "pages-a-propos",
+    "displayName": "Page À propos",
+    "description": "Contenu administrable de la page À propos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nomInterne": {
+      "type": "string",
+      "required": true,
+      "default": "Page À propos"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.seo",
+      "required": true
+    },
+    "entete": {
+      "type": "component",
+      "repeatable": false,
+      "component": "partage.entete-page",
+      "required": true
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "texteAlternatifPhoto": {
+      "type": "string",
+      "required": true
+    },
+    "titreParcours": {
+      "type": "string",
+      "required": true
+    },
+    "parcours": {
+      "type": "blocks",
+      "required": true
+    },
+    "surtitreExperience": {
+      "type": "string"
+    },
+    "titreExperience": {
+      "type": "string"
+    },
+    "contenuExperience": {
+      "type": "blocks"
+    },
+    "imageExperience": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "texteAlternatifImageExperience": {
+      "type": "string"
+    },
+    "titreCertifications": {
+      "type": "string",
+      "required": true
+    },
+    "certifications": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.certification",
+      "required": true
+    }
+  }
+}
